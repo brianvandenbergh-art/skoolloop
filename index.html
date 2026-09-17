@@ -3,155 +3,270 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SkoolLoop - School & Diary Cloud</title>
+  <title>SkoolLoop - Smart School Cloud</title>
   <style>
     :root {
       --primary: #4338ca;
       --primary-hover: #3730a3;
-      --primary-soft: #eef2ff;
-      --success: #15803d;
-      --success-soft: #dcfce7;
-      --danger: #b91c1c;
-      --danger-soft: #fee2e2;
-      --warning: #b45309;
-      --warning-soft: #fef3c7;
+      --primary-light: #eef2ff;
+      --success: #10b981;
+      --success-light: #ecfdf5;
+      --danger: #ef4444;
+      --danger-light: #fef2f2;
+      --warning: #f59e0b;
+      --warning-light: #fffbeb;
       --surface: #ffffff;
-      --bg: #f1f5f9;
+      --bg: #f8fafc;
       --border: #e2e8f0;
       --text: #0f172a;
       --text-muted: #64748b;
-      --radius: 14px;
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05);
+      --shadow-lg: 0 10px 25px -3px rgba(0,0,0,0.08);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: #e2e8f0; color: var(--text); padding: 16px 8px; }
+    body { background: #f1f5f9; color: var(--text); display: flex; justify-content: center; min-height: 100vh; padding: 16px 8px; }
 
-    /* Top Control Bar */
-    .sim-bar {
-      max-width: 1160px;
-      margin: 0 auto 14px auto;
+    /* Main App Shell */
+    .app-shell {
+      width: 100%;
+      max-width: 1240px;
+      background: var(--surface);
+      border-radius: 20px;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-height: 90vh;
+      transition: max-width 0.3s ease;
+    }
+    .app-shell.mobile-view { max-width: 430px; border-radius: 30px; }
+
+    /* Top Simulator Bar */
+    .sim-header {
       background: #0f172a;
-      border-radius: 12px;
-      padding: 10px 16px;
+      padding: 10px 18px;
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
       color: #94a3b8;
-      font-size: 13px;
+      font-size: 12px;
+      gap: 10px;
     }
-    .sim-group { display: flex; align-items: center; gap: 8px; }
+    .sim-ctrl { display: flex; align-items: center; gap: 8px; }
     .sim-select, .sim-btn {
       background: #1e293b;
       color: #f8fafc;
       border: 1px solid #334155;
-      padding: 6px 12px;
+      padding: 5px 10px;
       border-radius: 6px;
       font-size: 12px;
       cursor: pointer;
     }
 
-    /* Main Container */
-    .app-frame {
-      max-width: 1160px;
-      margin: 0 auto;
-      background: var(--surface);
-      border-radius: 20px;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      min-height: 88vh;
-      transition: max-width 0.3s ease;
-    }
-    .app-frame.mobile-mode { max-width: 430px; border-radius: 28px; }
-
-    /* Urgent Notice Banner */
-    .alert-banner {
-      background: linear-gradient(90deg, #b91c1c, #dc2626);
-      color: #ffffff;
-      padding: 12px 20px;
+    /* Emergency Alert Banner */
+    .urgent-banner {
+      background: linear-gradient(90deg, #dc2626, #b91c1c);
+      color: #fff;
+      padding: 10px 20px;
       font-size: 13px;
       font-weight: 600;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      transition: all 0.3s;
     }
 
-    /* Header */
-    header {
-      padding: 16px 24px;
+    /* Navigation Bar */
+    .top-nav {
+      padding: 14px 24px;
+      background: #fff;
       border-bottom: 1px solid var(--border);
-      background: #ffffff;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 16px;
     }
-    .brand-section { display: flex; align-items: center; gap: 12px; }
-    .school-logo-wrap {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
+    .school-info { display: flex; align-items: center; gap: 12px; }
+    .crest-box {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
       background: linear-gradient(135deg, #4338ca, #6366f1);
       display: flex;
       align-items: center;
       justify-content: center;
       color: #fff;
-      font-weight: 700;
-      font-size: 18px;
+      font-weight: 800;
+      font-size: 16px;
+      overflow: hidden;
       flex-shrink: 0;
     }
-    .school-logo-wrap img { width: 100%; height: 100%; object-fit: cover; }
+    .crest-box img { width: 100%; height: 100%; object-fit: cover; }
+    .nav-actions { display: flex; align-items: center; gap: 10px; }
 
-    /* Grids */
-    .grid-layout { display: grid; grid-template-columns: 1fr; flex: 1; }
-    @media (min-width: 860px) {
-      .app-frame:not(.mobile-mode) .grid-layout { grid-template-columns: 350px 1fr; }
-      .app-frame:not(.mobile-mode) .sidebar { border-right: 1px solid var(--border); }
+    /* App Core Layout (Sidebar + Main Area) */
+    .app-body {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      flex: 1;
+      background: #fff;
     }
-    .sidebar { background: #fafbfc; padding: 20px; }
-    .content-area { padding: 24px; background: #ffffff; }
+    @media (max-width: 860px) {
+      .app-body { grid-template-columns: 1fr; }
+      .app-nav-sidebar { display: none; }
+    }
+    .app-shell.mobile-view .app-body { grid-template-columns: 1fr; }
+    .app-shell.mobile-view .app-nav-sidebar { display: none; }
 
-    /* Pills & Badges */
+    /* Navigation Sidebar */
+    .app-nav-sidebar {
+      background: #fafbfc;
+      border-right: 1px solid var(--border);
+      padding: 20px 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .nav-group-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 12px 0 6px 8px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #475569;
+      cursor: pointer;
+      margin-bottom: 3px;
+      transition: all 0.15s;
+    }
+    .nav-item:hover { background: #f1f5f9; color: var(--text); }
+    .nav-item.active { background: var(--primary-light); color: var(--primary); }
+
+    /* Content Area */
+    .main-content {
+      padding: 24px;
+      background: #ffffff;
+      overflow-y: auto;
+      max-height: calc(90vh - 120px);
+    }
+
+    /* Cards & Grids */
+    .grid-2col { display: grid; grid-template-columns: 1fr 340px; gap: 20px; }
+    @media (max-width: 1024px) { .grid-2col { grid-template-columns: 1fr; } }
+    .app-shell.mobile-view .grid-2col { grid-template-columns: 1fr; }
+
+    .card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    /* Pill Badges */
     .pill {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-      padding: 3px 10px;
-      border-radius: 9999px;
+      gap: 5px;
+      padding: 3px 9px;
+      border-radius: 999px;
       font-size: 11px;
       font-weight: 700;
     }
-    .pill-primary { background: var(--primary-soft); color: var(--primary); }
-    .pill-success { background: var(--success-soft); color: var(--success); }
-    .pill-danger { background: var(--danger-soft); color: var(--danger); }
-    .pill-warning { background: var(--warning-soft); color: var(--warning); }
+    .pill-primary { background: var(--primary-light); color: var(--primary); }
+    .pill-success { background: var(--success-light); color: var(--success); }
+    .pill-danger { background: var(--danger-light); color: var(--danger); }
+    .pill-warning { background: var(--warning-light); color: var(--warning); }
+    .dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
 
-    /* Tabs & Cards */
-    .child-tab {
+    /* Child Switcher Tabs */
+    .child-selector {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 18px;
+      background: #f8fafc;
+      padding: 5px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+    .child-pill-btn {
+      flex: 1;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+    .child-pill-btn.active {
+      background: #ffffff;
+      color: var(--text);
+      box-shadow: var(--shadow);
+    }
+
+    /* Task Item */
+    .task-item-card {
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 12px;
+      background: #fff;
+      transition: all 0.2s;
+    }
+    .task-item-card.in-progress { border-color: #fde68a; background: #fffdf5; }
+    .task-item-card.completed { border-color: #a7f3d0; background: #f0fdf4; opacity: 0.85; }
+    .task-item-card.completed .task-heading { text-decoration: line-through; color: var(--text-muted); }
+
+    /* Student Roster Card */
+    .student-row-card {
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 12px 14px;
-      background: #ffffff;
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      cursor: pointer;
-      margin-bottom: 10px;
-      transition: all 0.2s;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 8px;
+      background: #fff;
     }
-    .child-tab.active { border-color: var(--primary); background: var(--primary-soft); }
-
-    .card {
-      border: 1.5px solid var(--border);
-      border-radius: 14px;
-      padding: 16px;
-      margin-bottom: 14px;
-      background: #ffffff;
+    .avatar-circle {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #e0e7ff;
+      color: var(--primary);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
     }
 
-    /* Buttons & Form Controls */
+    /* Buttons & Form Elements */
     .btn {
       display: inline-flex;
       align-items: center;
@@ -166,11 +281,13 @@
       transition: all 0.15s;
     }
     .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); }
     .btn-outline { background: #fff; border-color: var(--border); color: #334155; }
-    .btn-danger-soft { background: var(--danger-soft); color: var(--danger); }
-    .btn-sm { padding: 5px 10px; font-size: 11px; }
+    .btn-outline:hover { background: #f8fafc; border-color: #cbd5e1; }
+    .btn-danger-soft { background: var(--danger-light); color: var(--danger); border-color: #fecaca; }
+    .btn-sm { padding: 4px 8px; font-size: 11px; }
 
-    .form-group { margin-bottom: 14px; }
+    .form-group { margin-bottom: 12px; }
     .form-label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 5px; color: #475569; }
     .form-input {
       width: 100%;
@@ -180,8 +297,21 @@
       font-size: 13px;
       background: #fff;
     }
+    .form-input:focus { outline: none; border-color: var(--primary); }
 
-    /* Toast */
+    /* Modals & Toast */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 999;
+    }
+    .modal-card { background: #fff; border-radius: 16px; max-width: 480px; width: 100%; overflow: hidden; }
     .toast {
       position: fixed;
       bottom: 20px;
@@ -191,7 +321,7 @@
       padding: 12px 18px;
       border-radius: 10px;
       font-size: 13px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      box-shadow: var(--shadow-lg);
       z-index: 1000;
     }
 
@@ -200,309 +330,551 @@
 </head>
 <body>
 
-<!-- Simulation Switcher Bar -->
-<div class="sim-bar">
-  <div class="sim-group">
-    <span>View Mode:</span>
-    <select id="deviceSelect" class="sim-select" onchange="switchDevice(this.value)">
-      <option value="desktop">💻 Laptop / Desktop Dashboard</option>
-      <option value="mobile">📱 Smartphone App View</option>
-    </select>
+<div class="app-shell" id="appShell">
+
+  <!-- Top Simulator Bar (For Client Demonstrations) -->
+  <div class="sim-header">
+    <div class="sim-ctrl">
+      <span>🖥️ View Device:</span>
+      <select id="deviceSelect" class="sim-select" onchange="toggleDevice(this.value)">
+        <option value="desktop">Laptop / Desktop View</option>
+        <option value="mobile">Smartphone App (PWA)</option>
+      </select>
+    </div>
+
+    <div class="sim-ctrl">
+      <span>👤 Logged In Profile:</span>
+      <select id="roleSelect" class="sim-select" onchange="switchRole(this.value)">
+        <option value="parent">Mrs. Mokoena (Parent Portal)</option>
+        <option value="teacher">Mr. van der Merwe (Teacher Dashboard)</option>
+        <option value="admin">Mrs. Botha (School Office / Reception)</option>
+      </select>
+    </div>
+
+    <div class="sim-ctrl">
+      <button class="sim-btn" onclick="document.getElementById('crestFile').click()">🖼️ School Crest</button>
+      <input type="file" id="crestFile" accept="image/*" style="display:none" onchange="updateCrest(this)" />
+    </div>
   </div>
 
-  <div class="sim-group">
-    <span>Login Profile:</span>
-    <select id="roleSelect" class="sim-select" onchange="switchRole(this.value)">
-      <option value="admin">🏫 School Office / Receptionist Portal (New!)</option>
-      <option value="parent">👨‍👩‍👧 Parent Portal (Diary & Newsletters)</option>
-      <option value="teacher">👨‍🏫 Teacher Dashboard (Homework & Roster)</option>
-    </select>
-  </div>
-
-  <div class="sim-group">
-    <button class="sim-btn" onclick="document.getElementById('crestInput').click()">🖼️ School Crest</button>
-    <input type="file" id="crestInput" accept="image/*" style="display:none" onchange="updateCrest(this)" />
-  </div>
-</div>
-
-<div class="app-frame" id="appFrame">
-  
-  <!-- School Urgent Alert Banner (Controlled by Receptionist) -->
-  <div class="alert-banner" id="urgentBanner">
+  <!-- Urgent Notice Banner (Early Closures & Weather) -->
+  <div class="urgent-banner" id="emergencyBanner">
     <span id="bannerText">📢 <strong>Notice:</strong> School closes early today at 12:30 due to Interhigh Athletics.</span>
     <span class="pill" style="background:rgba(255,255,255,0.2); color:#fff;" id="bannerGrade">Grade 4–12</span>
   </div>
 
-  <!-- Header -->
-  <header>
-    <div class="brand-section">
-      <div class="school-logo-wrap" id="logoWrap">
+  <!-- Main App Top Navigation -->
+  <header class="top-nav">
+    <div class="school-info">
+      <div class="crest-box" id="crestBox">
         <span id="crestText">LM</span>
-        <img id="customCrestImg" class="hidden" src="" alt="School Badge" />
+        <img id="customCrestImg" class="hidden" src="" alt="Crest" />
       </div>
       <div>
         <h1 style="font-size:16px; font-weight:700;" id="schoolHeaderName">Laerskool Malelane / Hoërskool</h1>
-        <p style="font-size:12px; color:var(--text-muted);">SkoolLoop Official Communication & Diary Cloud</p>
+        <p style="font-size:11px; color:var(--text-muted);">🔒 POPIA Certified • End-to-End Encrypted School Portal</p>
       </div>
     </div>
-    <span class="pill pill-primary" id="rolePill">School Office / Reception</span>
+
+    <div class="nav-actions">
+      <span class="pill pill-primary" id="roleBadge">Parent Account</span>
+    </div>
   </header>
 
-  <!-- ======================================================== -->
-  <!-- 1. SCHOOL ADMIN / RECEPTIONIST PORTAL (Office)           -->
-  <!-- ======================================================== -->
-  <div id="adminView" class="grid-layout">
-    <!-- Left: Publish News & Emergency Alerts -->
-    <div class="sidebar">
-      <h3 style="font-size:14px; font-weight:700; margin-bottom:12px; color:#1e293b;">📢 School Broadcast Center</h3>
-
-      <!-- Early Closure / Urgent Banner Tool -->
-      <div class="card" style="background:#fff;">
-        <span class="pill pill-danger" style="margin-bottom:8px;">⚠️ URGENT BROADCAST</span>
-        <div class="form-group">
-          <label class="form-label">Alert Message (Early closure, load shedding, etc.)</label>
-          <input type="text" id="adminAlertText" class="form-input" value="School closes early today at 12:30 due to Interhigh Athletics." />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Target Grades</label>
-          <select class="form-input" id="adminAlertGrades">
-            <option>All Grades (Gr R - Gr 12)</option>
-            <option>Grades 4 - 7 (Intersen Phase)</option>
-            <option>Grades 8 - 12 (Hoërskool)</option>
-            <option>Grade R Only</option>
-          </select>
-        </div>
-        <button class="btn btn-primary" style="width:100%; background:var(--danger);" onclick="publishUrgentBanner()">
-          🚨 Push Emergency Banner to All Parents
-        </button>
+  <!-- App Body (Sidebar Navigation + Dynamic Screens) -->
+  <div class="app-body">
+    
+    <!-- Unified Sidebar Navigation -->
+    <aside class="app-nav-sidebar">
+      <div>
+        <div class="nav-group-title">MAIN MENU</div>
+        <div class="nav-item active" id="navDiary" onclick="switchNavTab('diary')">📋 Homework Diary</div>
+        <div class="nav-item" id="navNews" onclick="switchNavTab('news')">📰 Newsletters & Notices</div>
+        <div class="nav-item" id="navAbsence" onclick="switchNavTab('absence')">🏥 Report Sick / Doctor Note</div>
+        <div class="nav-item" id="navCalendar" onclick="switchNavTab('calendar')">📅 Term & Exam Dates</div>
       </div>
 
-      <!-- Publish Weekly Newsletter (Nuusbrief) -->
-      <div class="card" style="background:#fff;">
-        <span class="pill pill-primary" style="margin-bottom:8px;">📰 WEEKLY NEWSLETTER (NUUSBRIEF)</span>
-        
-        <div class="form-group">
-          <label class="form-label">Newsletter Title / Week</label>
-          <input type="text" id="newsTitle" class="form-input" value="Nuusbrief #28 • Term 3 Week 8" />
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">📎 Attach PDF Newsletter (Full 8 pages)</label>
-          <input type="file" accept=".pdf,image/*" class="form-input" />
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">⚡ 3 Quick Bullet Highlights (For busy parents!)</label>
-          <textarea id="newsHighlights" class="form-input" rows="3" placeholder="1. Friday is Civvies Day (R10)&#10;2. Rugby vs Nelspruit at 14:00&#10;3. School fee payments due by Monday"></textarea>
-        </div>
-
-        <button class="btn btn-primary" style="width:100%;" onclick="publishNewsletter()">
-          📤 Publish Newsletter & Send Push Notification
-        </button>
+      <div style="padding:12px; background:#fff; border:1px solid var(--border); border-radius:10px;">
+        <div style="font-size:11px; font-weight:700; color:var(--text-muted);">DATA PRIVACY</div>
+        <p style="font-size:11px; color:#64748b; margin-top:2px;">Marks and student records are private and never broadcasted.</p>
       </div>
-    </div>
+    </aside>
 
-    <!-- Right: Broadcast History & Analytics -->
-    <div class="content-area">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-        <div>
-          <h3 style="font-size:16px; font-weight:700;">Active Announcements & Newsletters</h3>
-          <p style="font-size:12px; color:var(--text-muted);">Manage published notices and verify how many parents have viewed them.</p>
+    <!-- Main Dynamic Content Area -->
+    <main class="main-content">
+
+      <!-- ======================================================== -->
+      <!-- 1. PARENT VIEW                                           -->
+      <!-- ======================================================== -->
+      <div id="parentViewContainer">
+        <!-- Child Switcher Bar -->
+        <div class="child-selector">
+          <button class="child-pill-btn active" id="pillThabo" onclick="selectChild('thabo')">
+            <span>👦 Thabo (Gr 9B • Hoërskool)</span>
+            <span class="pill pill-warning" id="thaboBadge">1 In Progress</span>
+          </button>
+          <button class="child-pill-btn" id="pillLerato" onclick="selectChild('lerato')">
+            <span>👧 Lerato (Gr 4A • Laerskool)</span>
+            <span class="pill pill-success" id="leratoBadge">All Completed</span>
+          </button>
         </div>
-        <span class="pill pill-success">412 Parents Connected</span>
-      </div>
 
-      <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <div class="grid-2col">
+          <!-- Left Column: Homework Diary Feed -->
           <div>
-            <span class="pill pill-success">Live on Parent App</span>
-            <h4 style="font-size:15px; font-weight:700; margin:6px 0 2px 0;" id="adminLiveNewsTitle">Nuusbrief #28 • Term 3 Week 8</h4>
-            <p style="font-size:12px; color:var(--text-muted);">Published today by School Receptionist (Mrs. Botha)</p>
-          </div>
-          <button class="btn btn-outline btn-sm" onclick="showToast('Newsletter link copied to clipboard!')">🔗 Copy Link</button>
-        </div>
-        
-        <div style="margin: 12px 0; padding:10px; background:#f8fafc; border-radius:8px; border:1px solid var(--border);">
-          <strong style="font-size:12px;">Extracted Highlights for Parents:</strong>
-          <ul style="font-size:12px; color:#334155; margin-left:18px; margin-top:4px;" id="adminLiveHighlights">
-            <li>Friday is Civvies Day (R10 for charity).</li>
-            <li>Rugby vs Nelspruit starts 14:00 on A-Field.</li>
-            <li>School fees due by 30 September.</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ======================================================== -->
-  <!-- 2. PARENT PORTAL (With Dedicated News & Diary Tabs)      -->
-  <!-- ======================================================== -->
-  <div id="parentView" class="grid-layout hidden">
-    <!-- Sidebar: Children & Absence -->
-    <div class="sidebar">
-      <div class="form-label">MY LEARNERS</div>
-      <div class="child-tab active" id="tab-thabo" onclick="selectChild('thabo')">
-        <div>
-          <div style="font-size:13px; font-weight:700;">👦 Thabo Mokoena</div>
-          <div style="font-size:11px; color:var(--text-muted);">Grade 9B • Hoërskool</div>
-        </div>
-        <span class="pill pill-warning">1 Pending</span>
-      </div>
-
-      <div class="child-tab" id="tab-lerato" onclick="selectChild('lerato')">
-        <div>
-          <div style="font-size:13px; font-weight:700;">👧 Lerato Mokoena</div>
-          <div style="font-size:11px; color:var(--text-muted);">Grade 4A • Laerskool</div>
-        </div>
-        <span class="pill pill-success">All Done</span>
-      </div>
-
-      <button class="btn btn-danger-soft" style="width:100%; margin-top:10px;" onclick="showToast('Opening Absence & Doctor Note uploader...')">
-        🏥 Report Child Absent / Doctor's Note
-      </button>
-    </div>
-
-    <!-- Main Content: Homework Diary + Weekly Newsletter Card -->
-    <div class="content-area">
-      
-      <!-- Newsletter Spotlight Card for Parents -->
-      <div class="card" style="border-left: 4px solid var(--primary); background:#fafbff;">
-        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-          <div>
-            <span class="pill pill-primary">LATEST SCHOOL NEWSLETTER</span>
-            <h3 style="font-size:15px; font-weight:700; margin:6px 0 2px 0;" id="parentNewsTitle">Nuusbrief #28 • Term 3 Week 8</h3>
-          </div>
-          <button class="btn btn-outline btn-sm" onclick="alert('Downloading full 8-page official PDF newsletter...')">📥 Download Full PDF</button>
-        </div>
-        <div style="margin-top:10px;">
-          <p style="font-size:12px; font-weight:700; color:#1e293b;">⚡ Key Highlights (No need to read 8 pages!):</p>
-          <ul style="font-size:13px; color:#334155; margin-left:18px; margin-top:4px;" id="parentNewsBullets">
-            <li>Friday is Civvies Day (R10 for charity).</li>
-            <li>Rugby vs Nelspruit starts 14:00 on A-Field.</li>
-            <li>School fees due by 30 September.</li>
-          </ul>
-        </div>
-      </div>
-
-      <h3 style="font-size:16px; font-weight:700; margin: 18px 0 10px 0;">Today's Homework Diary</h3>
-      <div id="parentTaskList">
-        <div class="card">
-          <div style="display:flex; justify-content:space-between;">
-            <div>
-              <span class="pill pill-warning">Woodwork / Houtwerk</span>
-              <span style="font-size:12px; color:var(--text-muted); margin-left:6px;">👨‍🏫 Mr. J. van der Merwe</span>
-              <h4 style="font-size:15px; font-weight:700; margin:6px 0 2px 0;">Isometric Drawing: Joint #3</h4>
-              <p style="font-size:13px; color:#475569;">Page 32 in drawing book. Sharpen 25mm chisel for workshop.</p>
+            <div class="card-header">
+              <div>
+                <h2 style="font-size:17px; font-weight:700;" id="diaryHeading">Thabo's Homework Diary</h2>
+                <p style="font-size:12px; color:var(--text-muted);">Click status to toggle: Not Started ➔ In Progress ➔ Completed</p>
+              </div>
+              <button class="btn btn-outline btn-sm" onclick="shareWhatsApp()">📲 WhatsApp Summary</button>
             </div>
-            <span style="font-size:11px; font-weight:700; color:var(--danger);">Due Tomorrow</span>
+
+            <!-- Task List (Rendered dynamically) -->
+            <div id="parentTaskList"></div>
           </div>
-          <div style="margin-top:12px; padding-top:10px; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
-            <span class="pill pill-warning">⏳ In Progress</span>
-            <button class="btn btn-primary btn-sm" onclick="showToast('Marked as complete!')">✓ Mark as Done</button>
+
+          <!-- Right Column: Quick Newsletter & Calendar Cards -->
+          <div>
+            <!-- Weekly Newsletter Card -->
+            <div class="card" style="border-left: 4px solid var(--primary); background:#fafbff;">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <span class="pill pill-primary">WEEKLY NEWSLETTER</span>
+                <button class="btn btn-outline btn-sm" onclick="alert('Downloading official 8-page PDF...')">📥 Full PDF</button>
+              </div>
+              <h4 style="font-size:14px; font-weight:700; margin:8px 0 4px 0;" id="parentNewsTitle">Nuusbrief #28 • Term 3</h4>
+              <p style="font-size:11px; font-weight:700; color:#1e293b;">⚡ 3 Key Highlights (No 8-page reading!):</p>
+              <ul style="font-size:12px; color:#334155; margin-left:16px; margin-top:4px;" id="parentNewsBullets">
+                <li>Friday is Civvies Day (R10 donation).</li>
+                <li>Rugby vs Nelspruit starts 14:00.</li>
+                <li>School fees due by 30 September.</li>
+              </ul>
+            </div>
+
+            <!-- Quick Absence Action -->
+            <div class="card">
+              <h4 style="font-size:13px; font-weight:700; margin-bottom:4px;">🏥 Need to report an absence?</h4>
+              <p style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Upload a doctor's letter directly to the register teacher.</p>
+              <button class="btn btn-danger-soft" style="width:100%;" onclick="openAbsenceModal()">+ Submit Doctor's Note</button>
+            </div>
           </div>
         </div>
       </div>
 
-    </div>
+      <!-- ======================================================== -->
+      <!-- 2. TEACHER VIEW                                          -->
+      <!-- ======================================================== -->
+      <div id="teacherViewContainer" class="hidden">
+        <div class="grid-2col">
+          <!-- Left: Task Creator & Class Roll Call -->
+          <div>
+            <!-- Fast 10s Post Form -->
+            <div class="card">
+              <h3 style="font-size:15px; font-weight:700; margin-bottom:10px;">⚡ 10-Second Task Post</h3>
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <div class="form-group">
+                  <label class="form-label">Subject & Class</label>
+                  <select id="teacherClassSelect" class="form-input" onchange="switchTeacherClass(this.value)">
+                    <option value="wood9">🪵 Gr 9 Woodwork (Mr. van der Merwe)</option>
+                    <option value="math10">📐 Gr 10 Maths (Mrs. Naidoo)</option>
+                    <option value="laer4a">🎒 Gr 4A Register (Juf. du Plessis)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Due Date</label>
+                  <input type="date" id="teacherDueDate" class="form-input" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Instructions for Diary</label>
+                <textarea id="teacherTaskInput" class="form-input" rows="2" placeholder="e.g. Complete Exercise 4, sums 1-8. Sharpen chisel."></textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">📸 Snap Blackboard Photo (Optional)</label>
+                <input type="file" accept="image/*" capture="environment" class="form-input" onchange="handleBoardPhoto(this)" />
+              </div>
+
+              <button class="btn btn-primary" style="width:100%; padding:10px;" onclick="publishTeacherTask()">🚀 Post to Class & Parents</button>
+            </div>
+
+            <!-- Morning Roll Call / Book Inspection -->
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h3 style="font-size:15px; font-weight:700;" id="rosterHeading">Gr 9 Woodwork: Roll Call</h3>
+                  <p style="font-size:12px; color:var(--text-muted);">Inspection of homework completed at home</p>
+                </div>
+                <span class="pill pill-success" id="rosterCount">26 / 30 Completed</span>
+              </div>
+
+              <div id="teacherRosterList"></div>
+            </div>
+          </div>
+
+          <!-- Right: Summary Stats & Absentee Alert -->
+          <div>
+            <div class="card">
+              <h4 style="font-size:13px; font-weight:700; margin-bottom:8px;">📊 Class Overview</h4>
+              <div style="font-size:13px; line-height:2;">
+                <div>👥 Total Class Roster: <strong>30 Students</strong></div>
+                <div style="color:var(--success);">✅ Completed at Home: <strong>26</strong></div>
+                <div style="color:var(--danger);">❌ Incomplete / Missing: <strong>3</strong></div>
+                <div style="color:var(--warning);">🏥 Reported Absent: <strong>1 (Doctor Note)</strong></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- 3. SCHOOL ADMIN / RECEPTIONIST VIEW                      -->
+      <!-- ======================================================== -->
+      <div id="adminViewContainer" class="hidden">
+        <div class="grid-2col">
+          <!-- Left: Broadcast Center -->
+          <div>
+            <!-- Emergency Early Closure Banner Tool -->
+            <div class="card">
+              <span class="pill pill-danger" style="margin-bottom:8px;">⚠️ URGENT BROADCAST</span>
+              <h3 style="font-size:15px; font-weight:700; margin-bottom:10px;">School Closure & Emergency Notice</h3>
+              
+              <div class="form-group">
+                <label class="form-label">Alert Message</label>
+                <input type="text" id="adminAlertInput" class="form-input" value="School closes early today at 12:30 due to Interhigh Athletics." />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Target Grades</label>
+                <select class="form-input" id="adminGradeSelect">
+                  <option>All Grades (Gr R - Gr 12)</option>
+                  <option>Grade 4 - 7 (Intersen Phase)</option>
+                  <option>Grade 8 - 12 (Hoërskool)</option>
+                  <option>Grade R Only</option>
+                </select>
+              </div>
+
+              <button class="btn btn-primary" style="width:100%; background:var(--danger);" onclick="broadcastAlert()">🚨 Broadcast Banner to All Parents</button>
+            </div>
+
+            <!-- Weekly Newsletter Publisher -->
+            <div class="card">
+              <span class="pill pill-primary" style="margin-bottom:8px;">📰 WEEKLY NEWSLETTER (NUUSBRIEF)</span>
+              <h3 style="font-size:15px; font-weight:700; margin-bottom:10px;">Publish Newsletter with Smart Highlights</h3>
+
+              <div class="form-group">
+                <label class="form-label">Newsletter Title</label>
+                <input type="text" id="adminNewsTitleInput" class="form-input" value="Nuusbrief #28 • Term 3 Week 8" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">📎 Attach Official 8-Page PDF</label>
+                <input type="file" accept=".pdf,image/*" class="form-input" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">⚡ 3 Key Bullet Highlights (Extracted for Parents)</label>
+                <textarea id="adminNewsHighlightsInput" class="form-input" rows="3">1. Friday is Civvies Day (R10 donation)
+2. Rugby vs Nelspruit starts 14:00 on A-Field
+3. School fee payments due by 30 September</textarea>
+              </div>
+
+              <button class="btn btn-primary" style="width:100%;" onclick="publishAdminNewsletter()">📤 Publish Newsletter & Send Alerts</button>
+            </div>
+          </div>
+
+          <!-- Right: School Setup & Active Stats -->
+          <div>
+            <div class="card">
+              <h4 style="font-size:13px; font-weight:700; margin-bottom:8px;">🏫 School Status</h4>
+              <div style="font-size:13px; line-height:2;">
+                <div>📍 Connected Parents: <strong>412</strong></div>
+                <div>👨‍🏫 Registered Teachers: <strong>28</strong></div>
+                <div>📡 Active Broadcasts: <strong style="color:var(--danger);">1 Emergency Banner</strong></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
   </div>
 
-  <!-- ======================================================== -->
-  <!-- 3. TEACHER DASHBOARD                                     -->
-  <!-- ======================================================== -->
-  <div id="teacherView" class="grid-layout hidden">
-    <div class="sidebar">
-      <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 12px;">⚡ 10-Second Task Post</h3>
+</div>
+
+<!-- Absence & Doctor's Note Modal -->
+<div id="absenceModal" class="modal-overlay hidden">
+  <div class="modal-card">
+    <div style="padding:14px 18px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+      <strong>🏥 Report Sick / Doctor's Note</strong>
+      <button onclick="closeAbsenceModal()" style="border:none; background:none; font-size:18px; cursor:pointer;">&times;</button>
+    </div>
+    <div style="padding:18px;">
       <div class="form-group">
-        <label class="form-label">Subject & Class</label>
+        <label class="form-label">Learner</label>
+        <input type="text" class="form-input" value="Thabo Mokoena (Grade 9B)" disabled />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Reason</label>
         <select class="form-input">
-          <option>🪵 Gr 9 Woodwork (Mr. van der Merwe)</option>
-          <option>📐 Gr 10 Maths (Mrs. Naidoo)</option>
+          <option>Illness / Sick (Doctor visited)</option>
+          <option>Family Emergency</option>
+          <option>Provincial Sport Tour</option>
         </select>
       </div>
       <div class="form-group">
-        <label class="form-label">Homework Instructions</label>
-        <textarea class="form-input" rows="3" placeholder="Type homework (e.g. Page 45 Ex 3 sums 1-6)"></textarea>
+        <label class="form-label">📸 Attach Photo of Doctor's Note (Doktersbrief)</label>
+        <input type="file" accept="image/*" capture="environment" class="form-input" />
       </div>
-      <button class="btn btn-primary" style="width:100%;" onclick="showToast('⚡ Homework posted in 10s!')">🚀 Post to Class</button>
-    </div>
-
-    <div class="content-area">
-      <h3 style="font-size:16px; font-weight:700; margin-bottom:12px;">Class Submissions & Morning Roll Call</h3>
-      <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
-        <div>
-          <strong>Thabo Mokoena</strong>
-          <div style="font-size:12px; color:var(--text-muted);"><span class="pill pill-success">Done at 17:35</span></div>
-        </div>
-        <button class="btn btn-outline btn-sm" onclick="alert('Viewing photo proof')">🔍 View Proof</button>
-      </div>
+      <button class="btn btn-primary" style="width:100%;" onclick="submitAbsence()">📨 Submit to School & Register Teacher</button>
     </div>
   </div>
-
 </div>
 
 <div id="toast" class="toast hidden"></div>
 
 <script>
-  // Admin Updates Urgent Banner
-  function publishUrgentBanner() {
-    const text = document.getElementById('adminAlertText').value;
-    const grade = document.getElementById('adminAlertGrades').value;
-    if (!text) return alert("Please enter an alert message!");
+  // Dynamic App Database
+  const appData = {
+    activeChild: 'thabo',
+    activeTeacherClass: 'wood9',
+    children: {
+      thabo: {
+        name: "Thabo Mokoena",
+        grade: "Grade 9B • Hoërskool",
+        tasks: [
+          { id: 't1', subject: 'Woodwork / Houtwerk', teacher: 'Mr. J. van der Merwe', title: 'Isometric Drawing: Joint #3', desc: 'Complete drawing on page 32. Sharpen 25mm chisel.', due: 'Tomorrow', status: 'in-progress', boardImg: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=600' },
+          { id: 't2', subject: 'Mathematics', teacher: 'Mrs. S. Naidoo', title: 'Algebraic Fractions Ex 4.2', desc: 'Sums 1 to 8 in blue exercise book.', due: 'Tomorrow', status: 'completed', boardImg: null }
+        ]
+      },
+      lerato: {
+        name: "Lerato Mokoena",
+        grade: "Grade 4A • Laerskool",
+        tasks: [
+          { id: 'l1', subject: 'Wiskunde (Maths)', teacher: 'Juf. M. du Plessis', title: 'Vermenigvuldiging Bladsy 28', desc: 'Doen somme 1 tot 8 in geel werkboek.', due: 'Tomorrow', status: 'completed', boardImg: null },
+          { id: 'l2', subject: 'English Home Language', teacher: 'Mrs. E. Smith', title: 'Reading Record Sign-off', desc: 'Read Chapter 4 aloud and get parent signature.', due: 'Tomorrow', status: 'completed', boardImg: null }
+        ]
+      }
+    },
+    classes: {
+      wood9: {
+        title: "Gr 9 Woodwork: Roll Call",
+        students: [
+          { name: "Thabo Mokoena", status: "Done (17:35)", absent: false },
+          { name: "Sipho Khumalo", status: "Done (18:10)", absent: false },
+          { name: "Liam Nel", status: "Absent", absent: true, doctorNote: true },
+          { name: "Anika Botha", status: "Incomplete", absent: false }
+        ]
+      },
+      math10: {
+        title: "Gr 10 Maths: Roll Call",
+        students: [
+          { name: "Devan Govender", status: "Done (16:20)", absent: false },
+          { name: "Chantelle Venter", status: "Done (17:00)", absent: false },
+          { name: "Kagiso Rabada", status: "Incomplete", absent: false }
+        ]
+      },
+      laer4a: {
+        title: "Gr 4A Register: Roll Call",
+        students: [
+          { name: "Lerato Mokoena", status: "Done (15:40)", absent: false },
+          { name: "Pieter van Zyl", status: "Done (16:15)", absent: false }
+        ]
+      }
+    }
+  };
 
-    document.getElementById('bannerText').innerHTML = `📢 <strong>Notice:</strong> ${text}`;
-    document.getElementById('bannerGrade').innerText = grade;
-    showToast("🚨 Emergency closure alert broadcasted to all parents!");
+  window.onload = function() {
+    renderParentFeed();
+    renderTeacherRoster();
+    const tmrw = new Date();
+    tmrw.setDate(tmrw.getDate() + 1);
+    document.getElementById('teacherDueDate').value = tmrw.toISOString().split('T')[0];
+  };
+
+  // Switch Child Tab (Parent View)
+  function selectChild(childKey) {
+    appData.activeChild = childKey;
+    document.getElementById('pillThabo').classList.toggle('active', childKey === 'thabo');
+    document.getElementById('pillLerato').classList.toggle('active', childKey === 'lerato');
+    document.getElementById('diaryHeading').innerText = `${appData.children[childKey].name.split(' ')[0]}'s Homework Diary`;
+    renderParentFeed();
   }
 
-  // Admin Publishes Weekly Newsletter
-  function publishNewsletter() {
-    const title = document.getElementById('newsTitle').value;
-    const bullets = document.getElementById('newsHighlights').value;
-    if (!title) return alert("Please provide a newsletter title!");
+  // Render Parent Homework Checklist
+  function renderParentFeed() {
+    const child = appData.children[appData.activeChild];
+    const container = document.getElementById('parentTaskList');
+    container.innerHTML = '';
 
-    // Update Admin Feed
-    document.getElementById('adminLiveNewsTitle').innerText = title;
-    
-    // Update Parent Feed
-    document.getElementById('parentNewsTitle').innerText = title;
-    
-    if (bullets) {
-      const items = bullets.split('\n').filter(b => b.trim() !== '');
-      const html = items.map(i => `<li>${i.replace(/^\d+\.\s*/, '')}</li>`).join('');
-      document.getElementById('adminLiveHighlights').innerHTML = html;
-      document.getElementById('parentNewsBullets').innerHTML = html;
+    const sortedTasks = [...child.tasks].sort((a, b) => {
+      if (a.status === 'completed' && b.status !== 'completed') return 1;
+      if (a.status !== 'completed' && b.status === 'completed') return -1;
+      return 0;
+    });
+
+    sortedTasks.forEach(t => {
+      let statusBadge = `<span class="pill pill-warning">⏳ In Progress</span>`;
+      if (t.status === 'completed') statusBadge = `<span class="pill pill-success">✓ Completed</span>`;
+      if (t.status === 'not-started') statusBadge = `<span class="pill pill-danger">Not Started</span>`;
+
+      const card = document.createElement('div');
+      card.className = `task-item-card ${t.status}`;
+      card.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+          <div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span class="pill pill-primary">${t.subject}</span>
+              <span style="font-size:12px; color:var(--text-muted);">👨‍🏫 ${t.teacher}</span>
+            </div>
+            <h4 class="task-heading" style="font-size:15px; font-weight:700; margin:6px 0 2px 0;">${t.title}</h4>
+            <p style="font-size:13px; color:#475569;">${t.desc}</p>
+          </div>
+          <span style="font-size:11px; font-weight:700; color:var(--danger);">${t.due}</span>
+        </div>
+
+        ${t.boardImg ? `<div style="margin:10px 0;"><img src="${t.boardImg}" style="width:100%; max-height:120px; object-fit:cover; border-radius:8px;" /></div>` : ''}
+
+        <div style="margin-top:12px; padding-top:10px; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+          <div>${statusBadge}</div>
+          <div style="display:flex; gap:6px;">
+            <button class="btn btn-outline btn-sm" onclick="cycleStatus('${t.id}', 'in-progress')">Mark In Progress</button>
+            <button class="btn btn-primary btn-sm" onclick="cycleStatus('${t.id}', 'completed')">
+              ${t.status === 'completed' ? 'Re-open' : '✓ Complete'}
+            </button>
+          </div>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+
+    updateCounters();
+  }
+
+  function cycleStatus(taskId, targetStatus) {
+    const child = appData.children[appData.activeChild];
+    const task = child.tasks.find(x => x.id === taskId);
+    if (task) {
+      task.status = task.status === targetStatus ? 'not-started' : targetStatus;
+      renderParentFeed();
+      showToast(`Updated status for ${task.subject}!`);
     }
+  }
 
+  function updateCounters() {
+    const thaboDone = appData.children.thabo.tasks.filter(t => t.status === 'completed').length;
+    document.getElementById('thaboBadge').innerText = `${thaboDone}/${appData.children.thabo.tasks.length} Done`;
+    const leratoDone = appData.children.lerato.tasks.filter(t => t.status === 'completed').length;
+    document.getElementById('leratoBadge').innerText = `${leratoDone}/${appData.children.lerato.tasks.length} Done`;
+  }
+
+  // Teacher Class Roster
+  function switchTeacherClass(clsKey) {
+    appData.activeTeacherClass = clsKey;
+    renderTeacherRoster();
+  }
+
+  function renderTeacherRoster() {
+    const cls = appData.classes[appData.activeTeacherClass];
+    document.getElementById('rosterHeading').innerText = cls.title;
+    const container = document.getElementById('teacherRosterList');
+    container.innerHTML = '';
+
+    cls.students.forEach(s => {
+      const card = document.createElement('div');
+      card.className = 'student-row-card';
+      let statusBadge = `<span class="pill pill-success">${s.status}</span>`;
+      if (s.absent) statusBadge = `<span class="pill pill-danger">🏥 Absent ${s.doctorNote ? '(Doktersbrief)' : ''}</span>`;
+      if (s.status === 'Incomplete') statusBadge = `<span class="pill pill-danger">❌ Incomplete</span>`;
+
+      card.innerHTML = `
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div class="avatar-circle">${s.name.split(' ').map(n=>n[0]).join('')}</div>
+          <div>
+            <div style="font-weight:700; font-size:13px;">${s.name}</div>
+            <div style="font-size:11px; margin-top:2px;">${statusBadge}</div>
+          </div>
+        </div>
+        <div>
+          ${s.doctorNote ? `<button class="btn btn-outline btn-sm" onclick="alert('Viewing Doctor Note: Dr. Van Niekerk - Excused for 2 days.')">📄 Doctor Note</button>` : ''}
+          ${!s.absent ? `<button class="btn btn-danger-soft btn-sm" onclick="showToast('Flagged ${s.name} - Alert sent to parents!')">Flag</button>` : ''}
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  function publishTeacherTask() {
+    const text = document.getElementById('teacherTaskInput').value;
+    if (!text) return alert("Please type homework instructions!");
+
+    appData.children.thabo.tasks.unshift({
+      id: 'task-' + Date.now(),
+      subject: 'Woodwork / Houtwerk',
+      teacher: 'Mr. J. van der Merwe',
+      title: 'Workshop Preparation',
+      desc: text,
+      due: 'Tomorrow',
+      status: 'not-started',
+      boardImg: null
+    });
+
+    showToast("⚡ Posted in 10s! Switch to Parent Portal to see it live.");
+    document.getElementById('teacherTaskInput').value = '';
+    renderParentFeed();
+  }
+
+  // Admin Broadcast & Newsletter
+  function broadcastAlert() {
+    const text = document.getElementById('adminAlertInput').value;
+    const grade = document.getElementById('adminGradeSelect').value;
+    document.getElementById('bannerText').innerHTML = `📢 <strong>Notice:</strong> ${text}`;
+    document.getElementById('bannerGrade').innerText = grade;
+    showToast("🚨 Emergency broadcast updated for all parents!");
+  }
+
+  function publishAdminNewsletter() {
+    const title = document.getElementById('adminNewsTitleInput').value;
+    const highlights = document.getElementById('adminNewsHighlightsInput').value;
+    document.getElementById('parentNewsTitle').innerText = title;
+
+    if (highlights) {
+      const items = highlights.split('\n').filter(b => b.trim() !== '');
+      document.getElementById('parentNewsBullets').innerHTML = items.map(i => `<li>${i.replace(/^\d+\.\s*/, '')}</li>`).join('');
+    }
     showToast("📰 Newsletter published! Parents can now see quick highlights.");
   }
 
-  // Role Switcher
+  // Navigation & Role Switchers
   function switchRole(role) {
-    document.getElementById('adminView').classList.toggle('hidden', role !== 'admin');
-    document.getElementById('parentView').classList.toggle('hidden', role !== 'parent');
-    document.getElementById('teacherView').classList.toggle('hidden', role !== 'teacher');
+    document.getElementById('parentViewContainer').classList.toggle('hidden', role !== 'parent');
+    document.getElementById('teacherViewContainer').classList.toggle('hidden', role !== 'teacher');
+    document.getElementById('adminViewContainer').classList.toggle('hidden', role !== 'admin');
 
-    const pill = document.getElementById('rolePill');
-    if (role === 'admin') {
-      pill.innerText = 'School Office / Reception';
-      pill.className = 'pill pill-primary';
-    } else if (role === 'parent') {
-      pill.innerText = 'Parent Portal';
-      pill.className = 'pill pill-success';
-    } else {
-      pill.innerText = 'Teacher Dashboard';
-      pill.className = 'pill pill-warning';
-    }
+    const badge = document.getElementById('roleBadge');
+    if (role === 'parent') { badge.innerText = 'Parent Account'; badge.className = 'pill pill-primary'; }
+    if (role === 'teacher') { badge.innerText = 'Teacher Account'; badge.className = 'pill pill-warning'; }
+    if (role === 'admin') { badge.innerText = 'Office Admin'; badge.className = 'pill pill-danger'; }
   }
 
-  function switchDevice(mode) {
-    document.getElementById('appFrame').classList.toggle('mobile-mode', mode === 'mobile');
+  function toggleDevice(mode) {
+    document.getElementById('appShell').classList.toggle('mobile-view', mode === 'mobile');
   }
 
-  function selectChild(child) {
-    document.getElementById('tab-thabo').classList.toggle('active', child === 'thabo');
-    document.getElementById('tab-lerato').classList.toggle('active', child === 'lerato');
-    showToast(`Switched to ${child === 'thabo' ? 'Thabo' : 'Lerato'}'s diary!`);
+  function switchNavTab(tab) {
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    if (tab === 'diary') document.getElementById('navDiary').classList.add('active');
+    if (tab === 'news') document.getElementById('navNews').classList.add('active');
+    if (tab === 'absence') openAbsenceModal();
+    if (tab === 'calendar') showToast("📅 Term & Exam dates synced with phone calendar!");
+  }
+
+  function openAbsenceModal() { document.getElementById('absenceModal').classList.remove('hidden'); }
+  function closeAbsenceModal() { document.getElementById('absenceModal').classList.add('hidden'); }
+  function submitAbsence() {
+    closeAbsenceModal();
+    showToast("🏥 Doctor's note submitted to register teacher!");
   }
 
   function updateCrest(input) {
@@ -524,6 +896,10 @@
     t.innerText = msg;
     t.classList.remove('hidden');
     setTimeout(() => t.classList.add('hidden'), 3500);
+  }
+
+  function shareWhatsApp() {
+    window.open("https://wa.me/?text=" + encodeURIComponent("Hi, here is today's homework status on SkoolLoop."), '_blank');
   }
 </script>
 </body>
