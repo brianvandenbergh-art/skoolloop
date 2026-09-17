@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SkoolLoop - Enterprise School Cloud</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>SkoolLoop - School Cloud</title>
   <style>
     :root {
       --primary: #4338ca;
@@ -20,263 +20,133 @@
       --border: #e2e8f0;
       --text: #0f172a;
       --text-muted: #64748b;
-      --radius: 12px;
+      --radius: 14px;
       --shadow: 0 4px 6px -1px rgba(0,0,0,0.06), 0 2px 4px -2px rgba(0,0,0,0.04);
       --shadow-lg: 0 15px 30px -4px rgba(0,0,0,0.1);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background: #e2e8f0; color: var(--text); min-height: 100vh; padding: 16px 8px; display: flex; justify-content: center; }
+    body { background: #0f172a; color: var(--text); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 0; }
 
-    /* Presenter Demo Bar */
-    .presenter-bar {
-      max-width: 1260px;
-      margin: 0 auto 12px auto;
-      background: #0f172a;
-      color: #94a3b8;
-      padding: 10px 18px;
-      border-radius: 12px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 12px;
-      gap: 10px;
-    }
-    .presenter-bar select, .presenter-bar button {
-      background: #1e293b;
-      color: #f8fafc;
-      border: 1px solid #334155;
-      padding: 5px 10px;
-      border-radius: 6px;
-      font-size: 12px;
-      cursor: pointer;
-    }
-
-    /* Main Container */
-    .app-frame {
+    /* App Shell */
+    .app-shell {
       width: 100%;
-      max-width: 1260px;
+      max-width: 440px; /* Native Mobile Default */
+      height: 100vh;
+      max-height: 920px;
       background: var(--surface);
-      border-radius: 20px;
+      border-radius: 0;
       box-shadow: var(--shadow-lg);
-      border: 1px solid var(--border);
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      min-height: 88vh;
+      position: relative;
     }
-    .app-frame.mobile-mode { max-width: 430px; border-radius: 28px; }
+    @media (min-width: 860px) {
+      body { padding: 20px; }
+      .app-shell { border-radius: 24px; border: 1px solid #334155; height: 90vh; }
+      .app-shell.desktop-wide { max-width: 1200px; }
+    }
 
-    /* School Header */
-    .school-hero-header {
-      background: linear-gradient(rgba(15, 23, 42, 0.78), rgba(15, 23, 42, 0.88)), url('https://images.unsplash.com/photo-1541829070764-84a7d30dd3f3?w=1200') center/cover;
+    /* Screen Viewport */
+    .viewport { flex: 1; overflow-y: auto; background: var(--bg); display: flex; flex-direction: column; padding-bottom: 70px; }
+    .viewport.no-bottom-nav { padding-bottom: 20px; }
+
+    /* Custom Header with Campus Photo */
+    .app-header {
+      background: linear-gradient(rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.9)), url('https://images.unsplash.com/photo-1541829070764-84a7d30dd3f3?w=1200') center/cover;
       color: #fff;
-      padding: 18px 24px;
+      padding: 16px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-shrink: 0;
     }
-    .school-identity { display: flex; align-items: center; gap: 14px; }
-    .school-crest-img {
-      width: 50px;
-      height: 50px;
-      border-radius: 12px;
-      background: #fff;
-      border: 2px solid rgba(255,255,255,0.3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      font-weight: 800;
-      color: var(--primary);
-      font-size: 18px;
+    .brand-box { display: flex; align-items: center; gap: 12px; }
+    .crest-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      background: #fff; border: 2px solid rgba(255,255,255,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; color: var(--primary); font-size: 16px; overflow: hidden;
     }
-    .school-crest-img img { width: 100%; height: 100%; object-fit: cover; }
+    .crest-icon img { width: 100%; height: 100%; object-fit: cover; }
 
-    /* Urgent Alert Banner */
-    .urgent-banner {
+    /* Emergency Alert Bar */
+    .alert-ticker {
       background: linear-gradient(90deg, #dc2626, #b91c1c);
-      color: #fff;
-      padding: 10px 20px;
-      font-size: 13px;
-      font-weight: 600;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      color: #fff; padding: 8px 16px; font-size: 12px; font-weight: 600;
+      display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
     }
 
-    /* Layout */
-    .app-core {
-      display: grid;
-      grid-template-columns: 240px 1fr;
-      flex: 1;
-      background: #fff;
-    }
-    @media (max-width: 860px) {
-      .app-core { grid-template-columns: 1fr; }
-      .app-sidebar { display: none; }
-    }
-    .app-frame.mobile-mode .app-core { grid-template-columns: 1fr; }
-    .app-frame.mobile-mode .app-sidebar { display: none; }
-
-    /* Sidebar Navigation */
-    .app-sidebar {
-      background: #fafbfc;
-      border-right: 1px solid var(--border);
-      padding: 20px 14px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-    .nav-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin: 12px 0 6px 8px; }
-    .nav-btn {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 12px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
-      color: #475569;
-      cursor: pointer;
-      margin-bottom: 4px;
-      transition: all 0.15s;
-    }
-    .nav-btn:hover { background: #f1f5f9; color: var(--text); }
-    .nav-btn.active { background: var(--primary-light); color: var(--primary); }
-
-    /* Content Area */
-    .main-viewport {
-      padding: 24px;
-      background: #ffffff;
-      overflow-y: auto;
-      max-height: calc(88vh - 120px);
-    }
-
-    .layout-2col { display: grid; grid-template-columns: 1fr 340px; gap: 20px; }
-    @media (max-width: 1060px) { .layout-2col { grid-template-columns: 1fr; } }
-    .app-frame.mobile-mode .layout-2col { grid-template-columns: 1fr; }
-
+    /* Cards */
     .card {
-      background: #ffffff;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 16px;
-      margin-bottom: 14px;
+      background: #ffffff; border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px; margin: 12px 16px;
       box-shadow: var(--shadow);
     }
 
     /* Pills & Badges */
     .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 3px 9px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 700;
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 8px; border-radius: 999px; font-size: 11px; font-weight: 700;
     }
     .pill-primary { background: var(--primary-light); color: var(--primary); }
     .pill-success { background: var(--success-light); color: var(--success); }
     .pill-danger { background: var(--danger-light); color: var(--danger); }
     .pill-warning { background: var(--warning-light); color: var(--warning); }
 
-    /* Child Switcher Tabs */
-    .child-tabs-bar {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 18px;
-      background: #f8fafc;
-      padding: 5px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-    }
-    .child-tab-pill {
-      flex: 1;
-      padding: 8px 12px;
-      border-radius: 8px;
-      border: none;
-      background: transparent;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      color: var(--text-muted);
-    }
-    .child-tab-pill.active { background: #fff; color: var(--text); box-shadow: var(--shadow); }
-
-    /* Task Card */
+    /* Task Item Card */
     .task-card {
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      padding: 16px;
-      margin-bottom: 12px;
-      background: #fff;
-      transition: all 0.2s;
+      border: 1.5px solid var(--border); border-radius: var(--radius);
+      padding: 14px; margin-bottom: 10px; background: #fff; transition: all 0.2s;
     }
     .task-card.in-progress { border-color: #fde68a; background: #fffdf5; }
     .task-card.completed { border-color: #a7f3d0; background: #f0fdf4; opacity: 0.85; }
     .task-card.completed .task-title { text-decoration: line-through; color: var(--text-muted); }
 
-    /* Report Card Box */
-    .report-card-banner {
-      background: linear-gradient(135deg, #1e1b4b, #312e81);
-      color: #fff;
-      border-radius: var(--radius);
-      padding: 20px;
-      margin-bottom: 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    /* Native Bottom Navigation Bar (Mobile) */
+    .bottom-nav {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 62px;
+      background: #ffffff; border-top: 1px solid var(--border);
+      display: flex; justify-content: space-around; align-items: center;
+      z-index: 100;
     }
+    .nav-tab-btn {
+      flex: 1; height: 100%; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 3px;
+      background: transparent; border: none; font-size: 10px; font-weight: 700;
+      color: var(--text-muted); cursor: pointer;
+    }
+    .nav-tab-btn.active { color: var(--primary); }
+    .nav-tab-btn span.icon { font-size: 18px; }
 
     /* Buttons & Form Elements */
     .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      padding: 8px 14px;
-      font-size: 12px;
-      font-weight: 600;
-      border-radius: 8px;
-      border: 1px solid transparent;
-      cursor: pointer;
-      transition: all 0.15s;
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 10px 14px; font-size: 13px; font-weight: 600;
+      border-radius: 10px; border: 1px solid transparent; cursor: pointer; width: 100%;
     }
     .btn-primary { background: var(--primary); color: #fff; }
     .btn-primary:hover { background: var(--primary-hover); }
     .btn-outline { background: #fff; border-color: var(--border); color: #334155; }
-    .btn-outline:hover { background: #f8fafc; border-color: #cbd5e1; }
-    .btn-danger-soft { background: var(--danger-light); color: var(--danger); border-color: #fecaca; }
-    .btn-sm { padding: 4px 8px; font-size: 11px; }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-sm { padding: 4px 8px; font-size: 11px; width: auto; }
 
     .form-group { margin-bottom: 12px; }
-    .form-label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: #475569; }
-    .form-input { width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; background:#fff; }
+    .form-label { display: block; font-size: 11px; font-weight: 700; margin-bottom: 4px; color: #475569; text-transform: uppercase; }
+    .form-input { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; background:#fff; }
 
     /* Modals & Toast */
     .modal-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(15, 23, 42, 0.7);
-      backdrop-filter: blur(4px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-      z-index: 999;
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 999;
     }
-    .modal-card { background: #fff; border-radius: 16px; max-width: 520px; width: 100%; overflow: hidden; }
+    .modal-card { background: #fff; border-radius: 16px; max-width: 440px; width: 100%; overflow: hidden; max-height: 90vh; overflow-y: auto; }
     .toast {
-      position: fixed;
-      bottom: 20px; right: 20px;
-      background: #0f172a; color: #fff;
-      padding: 12px 18px; border-radius: 10px;
-      font-size: 13px; box-shadow: var(--shadow-lg); z-index: 1000;
+      position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+      background: #0f172a; color: #fff; padding: 10px 18px; border-radius: 20px;
+      font-size: 12px; box-shadow: var(--shadow-lg); z-index: 1000;
     }
 
     .hidden { display: none !important; }
@@ -284,942 +154,892 @@
 </head>
 <body>
 
-<div style="width:100%; max-width:1260px;">
+<div class="app-shell" id="appShell">
 
-  <!-- Presenter Test Bar -->
-  <div class="presenter-bar">
-    <div>
-      <span>🖥️ View Mode:</span>
-      <select onchange="toggleDevice(this.value)">
-        <option value="desktop">Laptop / Desktop Dashboard</option>
-        <option value="mobile">Smartphone App View (PWA)</option>
-      </select>
-    </div>
-
-    <div>
-      <span>🎭 Switch User Account:</span>
-      <select id="personaSelector" onchange="switchPersona(this.value)">
-        <option value="parent">👨‍👩‍👧 Parent: Mrs. Mokoena (Thabo & Lerato)</option>
-        <option value="student">🎓 Student: Thabo (Gr 9B - High School)</option>
-        <option value="teacher">👨‍🏫 Teacher: Mr. van der Merwe (Woodwork & Tech)</option>
-        <option value="admin">🏫 School Office: Mrs. Botha (Receptionist)</option>
-      </select>
-    </div>
-
-    <div>
-      <button onclick="document.getElementById('crestInput').click()">🖼️ School Crest</button>
-      <input type="file" id="crestInput" accept="image/*" style="display:none" onchange="uploadCrest(this)" />
-      <button onclick="resetData()" style="background:#dc2626;">🔄 Reset Demo</button>
-    </div>
+  <!-- Top Emergency Ticker (Controlled by School Admin) -->
+  <div class="alert-ticker hidden" id="emergencyTicker">
+    <span id="tickerText">📢 <strong>Notice:</strong> Early closure today at 12:30.</span>
+    <span class="pill" style="background:rgba(255,255,255,0.2); color:#fff;" id="tickerGrade">All</span>
   </div>
 
-  <!-- Main App Shell -->
-  <div class="app-frame" id="appFrame">
-    
-    <!-- Emergency Banner -->
-    <div class="urgent-banner" id="urgentBanner">
-      <span id="bannerText">📢 <strong>Notice:</strong> School closes early today at 12:30 due to Interhigh Athletics.</span>
-      <span class="pill" style="background:rgba(255,255,255,0.2); color:#fff;" id="bannerTarget">Grades 4–12</span>
-    </div>
-
-    <!-- Branded School Header -->
-    <header class="school-hero-header" id="schoolHero">
-      <div class="school-identity">
-        <div class="school-crest-img" id="crestBox">
-          <span id="crestInitials">LM</span>
-          <img id="crestImg" class="hidden" src="" alt="Crest" />
-        </div>
-        <div>
-          <h1 style="font-size:17px; font-weight:700;" id="schoolNameHeader">Laerskool Malelane / Hoërskool</h1>
-          <p style="font-size:11px; opacity:0.9;">🔒 POPIA Certified • End-to-End Encrypted Cloud Diary</p>
-        </div>
+  <!-- Dynamic Header -->
+  <header class="app-header hidden" id="appHeader">
+    <div class="brand-box">
+      <div class="crest-icon" id="headerCrest">
+        <span id="headerCrestLetters">SL</span>
+        <img id="headerCrestImg" class="hidden" src="" alt="Crest" />
       </div>
-
       <div>
-        <span class="pill pill-primary" id="personaBadge">Parent Portal</span>
-      </div>
-    </header>
-
-    <!-- App Body -->
-    <div class="app-core">
-      
-      <!-- Dynamic Role Sidebar -->
-      <aside class="app-sidebar" id="appSidebar">
-        <!-- Injected dynamically by JS -->
-      </aside>
-
-      <!-- Main Dynamic Content Viewport -->
-      <main class="main-viewport" id="mainViewport">
-        <!-- Injected dynamically by JS -->
-      </main>
-
-    </div>
-
-  </div>
-
-</div>
-
-<!-- Absence / Doctor Note Modal -->
-<div id="absenceModal" class="modal-overlay hidden">
-  <div class="modal-card">
-    <div style="padding:14px 18px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
-      <strong>🏥 Submit Doctor's Note / Absence</strong>
-      <button onclick="closeModal('absenceModal')" style="border:none; background:none; font-size:18px; cursor:pointer;">&times;</button>
-    </div>
-    <div style="padding:18px;">
-      <div class="form-group">
-        <label class="form-label">Learner</label>
-        <select class="form-input">
-          <option>Thabo Mokoena (Grade 9B)</option>
-          <option>Lerato Mokoena (Grade 4A)</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Reason</label>
-        <select class="form-input">
-          <option>Illness (Doctor visited / Doktersbrief attached)</option>
-          <option>Family Emergency</option>
-          <option>Provincial Sport Tour</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">📸 Snap Photo of Doctor's Note (Doktersbrief)</label>
-        <input type="file" accept="image/*" capture="environment" class="form-input" />
-      </div>
-      <button class="btn btn-primary" style="width:100%;" onclick="submitAbsence()">📨 Submit Directly to Register Teacher</button>
-    </div>
-  </div>
-</div>
-
-<!-- 3-Question Subject Brain Challenge Modal -->
-<div id="quizModal" class="modal-overlay hidden">
-  <div class="modal-card">
-    <div style="padding:14px 18px; background:var(--primary); color:#fff; display:flex; justify-content:space-between; align-items:center;">
-      <strong>⚡ Daily 3-Question Homework Brain Challenge</strong>
-      <button onclick="closeModal('quizModal')" style="border:none; background:none; color:#fff; font-size:18px; cursor:pointer;">&times;</button>
-    </div>
-    <div style="padding:20px;" id="quizBody">
-      <div style="margin-bottom:16px;">
-        <span class="pill pill-primary">Question 1 of 3: Mathematics</span>
-        <p style="font-size:14px; font-weight:700; margin:8px 0;">Solve for x: 3x + 12 = 27</p>
-        <div style="display:flex; flex-direction:column; gap:6px;">
-          <button class="btn btn-outline" style="justify-content:flex-start;" onclick="answerQuiz(1, true)">A) x = 5</button>
-          <button class="btn btn-outline" style="justify-content:flex-start;" onclick="answerQuiz(1, false)">B) x = 6</button>
-          <button class="btn btn-outline" style="justify-content:flex-start;" onclick="answerQuiz(1, false)">C) x = 3</button>
-        </div>
+        <h1 style="font-size:15px; font-weight:700;" id="headerSchoolName">SkoolLoop Cloud</h1>
+        <p style="font-size:11px; opacity:0.85;" id="headerUserName">Welcome</p>
       </div>
     </div>
-  </div>
+    <div>
+      <button class="btn btn-outline btn-sm" style="background:rgba(255,255,255,0.15); color:#fff; border:none;" onclick="logout()">Log Out</button>
+    </div>
+  </header>
+
+  <!-- Main Viewport Screen -->
+  <main class="viewport no-bottom-nav" id="mainViewport">
+    <!-- Rendered dynamically by state router -->
+  </main>
+
+  <!-- Native Mobile Bottom Navigation Bar -->
+  <nav class="bottom-nav hidden" id="bottomNav">
+    <!-- Populated dynamically based on user role -->
+  </nav>
+
 </div>
 
 <div id="toast" class="toast hidden"></div>
 
 <script>
-  // Complete State Engine
-  const defaultState = {
-    activePersona: 'parent',
-    activeTab: 'diary',
-    activeChild: 'thabo',
-    activeTeacherClass: 'wood9b',
-    banner: { text: "School closes early today at 12:30 due to Interhigh Athletics.", target: "Grades 4–12" },
-    children: {
-      thabo: {
-        name: "Thabo Mokoena",
-        grade: "Grade 9B",
-        school: "Hoërskool Centurion",
-        type: "high",
-        reports: {
-          term1: { avg: '76%', status: 'Passed with Distinction', download: 'Report_Term1_Thabo.pdf' },
-          term2: { avg: '74%', status: 'Passed with Merit', download: 'Report_Term2_Thabo.pdf' },
-          term3: { avg: '78%', status: 'Passed with Distinction', download: 'Report_Term3_Thabo.pdf' }
-        },
-        tasks: [
-          { id: 't1', subject: 'Woodwork / Houtwerk', teacher: 'Mnr. J. van der Merwe', title: 'Isometric Joint Drawing #3', desc: 'Complete drawing on page 32 in A3 book. Sharpen chisel for workshop.', due: 'Tomorrow', status: 'in-progress', boardImg: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=600' },
-          { id: 't2', subject: 'Mathematics', teacher: 'Mev. S. Naidoo', title: 'Algebraic Fractions Ex 4.2', desc: 'Sums 1 to 8 in blue exercise book.', due: 'Tomorrow', status: 'completed', boardImg: null },
-          { id: 't3', subject: 'Natural Sciences', teacher: 'Mnr. D. Smit', title: 'Periodic Table Summary', desc: 'Summarize elements 1 to 20.', due: 'Friday', status: 'not-started', boardImg: null }
-        ]
-      },
-      lerato: {
-        name: "Lerato Mokoena",
-        grade: "Grade 4A",
-        school: "Laerskool Malelane",
-        type: "primary",
-        reports: {
-          term1: { avg: '82%', status: 'Uitstekend Geslaag', download: 'Rapport_Kwartaal1_Lerato.pdf' },
-          term2: { avg: '80%', status: 'Uitstekend Geslaag', download: 'Rapport_Kwartaal2_Lerato.pdf' },
-          term3: { avg: '85%', status: 'Uitstekend Geslaag', download: 'Rapport_Kwartaal3_Lerato.pdf' }
-        },
-        tasks: [
-          { id: 'l1', subject: 'Wiskunde', teacher: 'Juf. M. du Plessis', title: 'Maaltafels Bladsy 28', desc: 'Doen somme 1 tot 8 in geel werkboek.', due: 'Tomorrow', status: 'completed', boardImg: null },
-          { id: 'l2', subject: 'English FAL', teacher: 'Mrs. E. Smith', title: 'Reading Record Sign-off', desc: 'Read Chapter 4 aloud and get parent signature in diary.', due: 'Tomorrow', status: 'completed', boardImg: null }
-        ]
-      }
-    },
-    // Multi-Class Management for High School Teachers
-    teacherClasses: {
-      wood9a: {
-        code: "WOOD-9A",
-        title: "Graad 9A Woodwork",
-        period: "Period 2 (08:45)",
-        students: [
-          { name: "Devan Govender", status: "Done (16:20)", absent: false },
-          { name: "Chantelle Venter", status: "Done (17:00)", absent: false },
-          { name: "Kagiso Rabada", status: "Incomplete", absent: false }
-        ]
-      },
-      wood9b: {
-        code: "WOOD-9B",
-        title: "Graad 9B Woodwork",
-        period: "Period 4 (10:30)",
-        students: [
-          { name: "Thabo Mokoena", status: "Done (17:35)", absent: false },
-          { name: "Sipho Khumalo", status: "Done (18:10)", absent: false },
-          { name: "Liam Nel", status: "Absent (Doktersbrief Attached)", absent: true, doctorNote: true },
-          { name: "Anika Botha", status: "Incomplete", absent: false }
-        ]
-      },
-      tech10a: {
-        code: "TECH-10A",
-        title: "Graad 10A Tegnologie / EGD",
-        period: "Period 6 (12:00)",
-        students: [
-          { name: "Marco Rossouw", status: "Done (19:15)", absent: false },
-          { name: "Zubair Patel", status: "Done (18:40)", absent: false },
-          { name: "Francois Pienaar", status: "Incomplete", absent: false }
-        ]
-      }
-    },
-    events: [
-      { id: 'e1', title: 'Interhigh Athletics (Vroeg Sluit 12:30)', date: 'Vandag 12:30', eligibility: 'Grades 4–12 (Gr R–3 Uitgesluit)', type: 'sport' },
-      { id: 'e2', title: 'Graad 9 Lente Sokkie 🎉', date: 'Vrydag 18:00 - 22:00', eligibility: 'Hoërskool Gr 8–12 Only', type: 'social' },
-      { id: 'e3', title: 'Wiskunde Kwartaaltoets', date: '25 September', eligibility: 'Graad 9 Leerders', type: 'exam' },
-      { id: 'e4', title: 'Ouer Aand (Parent Evening)', date: '28 September 17:30', eligibility: 'All Parents', type: 'meeting' }
-    ],
-    news: {
-      title: "Nuusbrief #28 • Kwartaal 3",
-      bullets: [
-        "Vrydag is Civvies Dag (R10 vir liefdadigheid).",
-        "Rugby vs Nelspruit begin 14:00 op A-Veld.",
-        "Skoolgeld betalings betaalbaar voor 30 September."
-      ]
-    }
+  // Complete Multi-Tenant Database Engine (LocalStorage)
+  const DB_KEY = 'skoolloop_clean_production_v1';
+  let db = JSON.parse(localStorage.getItem(DB_KEY)) || {
+    schools: {},
+    users: [], // { id, role: 'school_admin'|'teacher'|'parent'|'student', name, email, schoolCode, ... }
+    homework: [],
+    events: [],
+    newsletters: [],
+    absences: [],
+    reports: [],
+    currentUser: null
   };
 
-  let state = JSON.parse(localStorage.getItem('skoolloop_master')) || defaultState;
-  function save() { localStorage.setItem('skoolloop_master', JSON.stringify(state)); }
-
-  window.onload = function() { renderAll(); };
-
-  function renderAll() {
-    renderHeader();
-    renderSidebar();
-    renderMain();
+  function saveDB() {
+    localStorage.setItem(DB_KEY, JSON.stringify(db));
   }
 
-  function renderHeader() {
-    document.getElementById('bannerText').innerHTML = `📢 <strong>Notice:</strong> ${state.banner.text}`;
-    document.getElementById('bannerTarget').innerText = state.banner.target;
-    
-    const pBadge = document.getElementById('personaBadge');
-    if (state.activePersona === 'parent') { pBadge.innerText = 'Parent Portal'; pBadge.className = 'pill pill-primary'; }
-    if (state.activePersona === 'student') { pBadge.innerText = 'Student Portal (Gr 9)'; pBadge.className = 'pill pill-warning'; }
-    if (state.activePersona === 'teacher') { pBadge.innerText = 'Teacher Dashboard'; pBadge.className = 'pill pill-success'; }
-    if (state.activePersona === 'admin') { pBadge.innerText = 'School Office'; pBadge.className = 'pill pill-danger'; }
-  }
+  window.onload = function() {
+    router();
+  };
 
-  // Render Sidebar per Role with Working Click Handlers
-  function renderSidebar() {
-    const sb = document.getElementById('appSidebar');
-    if (state.activePersona === 'parent') {
-      sb.innerHTML = `
-        <div>
-          <div class="nav-label">PARENT MENU</div>
-          <div class="nav-btn ${state.activeTab==='diary'?'active':''}" onclick="setTab('diary')">📋 Homework Diary</div>
-          <div class="nav-btn ${state.activeTab==='reports'?'active':''}" onclick="setTab('reports')">📊 Report Cards (Rapporte)</div>
-          <div class="nav-btn ${state.activeTab==='events'?'active':''}" onclick="setTab('events')">🎉 Events, Sokkies & Exams</div>
-          <div class="nav-btn ${state.activeTab==='news'?'active':''}" onclick="setTab('news')">📰 Newsletters (Nuusbriewe)</div>
-          <div class="nav-btn" onclick="openModal('absenceModal')">🏥 Report Sick / Doctor Note</div>
-        </div>
-        <div style="padding:10px; background:#fff; border:1px solid var(--border); border-radius:8px; font-size:11px;">
-          <strong>🔒 POPIA Protected</strong><br>Only you see your children's tasks & reports.
-        </div>
-      `;
-    } else if (state.activePersona === 'student') {
-      sb.innerHTML = `
-        <div>
-          <div class="nav-label">STUDENT PORTAL</div>
-          <div class="nav-btn ${state.activeTab==='diary'?'active':''}" onclick="setTab('diary')">📚 My 7 Subjects & Tasks</div>
-          <div class="nav-btn ${state.activeTab==='reports'?'active':''}" onclick="setTab('reports')">📊 My Term Reports</div>
-          <div class="nav-btn ${state.activeTab==='events'?'active':''}" onclick="setTab('events')">🎉 Sokkies & Sport Events</div>
-          <div class="nav-btn ${state.activeTab==='challenge'?'active':''}" onclick="openQuizModal()">⚡ 3-Question Brain Challenge</div>
-        </div>
-      `;
-    } else if (state.activePersona === 'teacher') {
-      sb.innerHTML = `
-        <div>
-          <div class="nav-label">TEACHER MENU</div>
-          <div class="nav-btn ${state.activeTab==='teach-post'?'active':''}" onclick="setTab('teach-post')">⚡ 10s Task Poster</div>
-          <div class="nav-btn ${state.activeTab==='teach-roster'?'active':''}" onclick="setTab('teach-roster')">👥 Multi-Class Roll Call</div>
-          <div class="nav-btn ${state.activeTab==='teach-reports'?'active':''}" onclick="setTab('teach-reports')">📤 Upload Student Reports</div>
-          <div class="nav-btn ${state.activeTab==='events'?'active':''}" onclick="setTab('events')">📅 School Calendar</div>
-        </div>
-      `;
+  // Main App Router
+  function router() {
+    const user = db.currentUser;
+    const header = document.getElementById('appHeader');
+    const bNav = document.getElementById('bottomNav');
+    const ticker = document.getElementById('emergencyTicker');
+    const vp = document.getElementById('mainViewport');
+
+    if (!user) {
+      header.classList.add('hidden');
+      bNav.classList.add('hidden');
+      ticker.classList.add('hidden');
+      vp.classList.add('no-bottom-nav');
+      renderAuthScreen(vp);
     } else {
-      sb.innerHTML = `
-        <div>
-          <div class="nav-label">OFFICE / ADMIN MENU</div>
-          <div class="nav-btn ${state.activeTab==='admin-broadcast'?'active':''}" onclick="setTab('admin-broadcast')">🚨 Emergency Early Closure</div>
-          <div class="nav-btn ${state.activeTab==='admin-news'?'active':''}" onclick="setTab('admin-news')">📰 Publish Weekly Newsletter</div>
-          <div class="nav-btn ${state.activeTab==='admin-events'?'active':''}" onclick="setTab('admin-events')">🎉 1-Click Event Presets</div>
-          <div class="nav-btn ${state.activeTab==='admin-reports'?'active':''}" onclick="setTab('admin-reports')">📊 Report Card Distribution</div>
-        </div>
-      `;
-    }
-  }
-
-  // Render Main Content Viewport
-  function renderMain() {
-    const main = document.getElementById('mainViewport');
-    
-    // Parent View Routing
-    if (state.activePersona === 'parent') {
-      if (state.activeTab === 'diary') renderParentDiary(main);
-      else if (state.activeTab === 'reports') renderReportsView(main);
-      else if (state.activeTab === 'events') renderEventsView(main);
-      else if (state.activeTab === 'news') renderNewsView(main);
-    } 
-    // Student View Routing
-    else if (state.activePersona === 'student') {
-      if (state.activeTab === 'diary') renderStudentDiary(main);
-      else if (state.activeTab === 'reports') renderReportsView(main);
-      else if (state.activeTab === 'events') renderEventsView(main);
-      else if (state.activeTab === 'challenge') renderChallengeView(main);
-    }
-    // Teacher View Routing
-    else if (state.activePersona === 'teacher') {
-      if (state.activeTab === 'teach-post') renderTeacherPostView(main);
-      else if (state.activeTab === 'teach-roster') renderTeacherRosterView(main);
-      else if (state.activeTab === 'teach-reports') renderTeacherReportsUploadView(main);
-      else if (state.activeTab === 'events') renderEventsView(main);
-    }
-    // Admin / Office View Routing
-    else {
-      if (state.activeTab === 'admin-broadcast') renderAdminBroadcastView(main);
-      else if (state.activeTab === 'admin-news') renderAdminNewsView(main);
-      else if (state.activeTab === 'admin-events') renderAdminEventsView(main);
-      else if (state.activeTab === 'admin-reports') renderAdminReportsDistView(main);
-    }
-  }
-
-  // ================= 1. PARENT & STUDENT SCREENS =================
-  function renderParentDiary(main) {
-    const child = state.children[state.activeChild];
-    
-    const sorted = [...child.tasks].sort((a, b) => {
-      if (a.status === 'completed' && b.status !== 'completed') return 1;
-      if (a.status !== 'completed' && b.status === 'completed') return -1;
-      return 0;
-    });
-
-    let tasksHtml = sorted.map(t => `
-      <div class="task-card ${t.status}">
-        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-          <div>
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span class="pill pill-primary">${t.subject}</span>
-              <span style="font-size:12px; color:var(--text-muted);">👨‍🏫 ${t.teacher}</span>
-            </div>
-            <h4 class="task-title" style="font-size:15px; font-weight:700; margin:6px 0 2px 0;">${t.title}</h4>
-            <p style="font-size:13px; color:#475569;">${t.desc}</p>
-          </div>
-          <span style="font-size:11px; font-weight:700; color:var(--danger);">${t.due}</span>
-        </div>
-        ${t.boardImg ? `<div style="margin:10px 0;"><img src="${t.boardImg}" style="width:100%; max-height:120px; object-fit:cover; border-radius:8px;" /></div>` : ''}
-        <div style="margin-top:12px; padding-top:10px; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
-          <div>
-            ${t.status === 'completed' ? '<span class="pill pill-success">✓ Completed</span>' : t.status === 'in-progress' ? '<span class="pill pill-warning">⏳ In Progress</span>' : '<span class="pill pill-danger">Not Started</span>'}
-          </div>
-          <div style="display:flex; gap:6px;">
-            <button class="btn btn-outline btn-sm" onclick="toggleTaskStatus('${t.id}', 'in-progress')">Mark In Progress</button>
-            <button class="btn btn-primary btn-sm" onclick="toggleTaskStatus('${t.id}', 'completed')">
-              ${t.status === 'completed' ? 'Re-open' : '✓ Mark Done'}
-            </button>
-          </div>
-        </div>
-      </div>
-    `).join('');
-
-    main.innerHTML = `
-      <div class="child-tabs-bar">
-        <button class="child-tab-pill ${state.activeChild==='thabo'?'active':''}" onclick="setChild('thabo')">
-          <span>👦 Thabo (Gr 9B • Hoërskool)</span>
-          <span class="pill pill-warning">${state.children.thabo.tasks.filter(x=>x.status!=='completed').length} Pending</span>
-        </button>
-        <button class="child-tab-pill ${state.activeChild==='lerato'?'active':''}" onclick="setChild('lerato')">
-          <span>👧 Lerato (Gr 4A • Laerskool)</span>
-          <span class="pill pill-success">All Done</span>
-        </button>
-      </div>
-
-      <div class="layout-2col">
-        <div>
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-            <h2 style="font-size:17px; font-weight:700;">${child.name}'s Homework Diary</h2>
-            <button class="btn btn-outline btn-sm" onclick="showToast('Summary sent to WhatsApp!')">📲 WhatsApp Summary</button>
-          </div>
-          ${tasksHtml}
-        </div>
-
-        <div>
-          <!-- 3-Question Brain Challenge Launcher -->
-          <div class="card" style="background:linear-gradient(135deg, #4338ca, #6366f1); color:#fff;">
-            <span class="pill" style="background:rgba(255,255,255,0.2); color:#fff; margin-bottom:6px;">⚡ DAILY BRAIN CHALLENGE</span>
-            <h4 style="font-size:14px; font-weight:700;">3-Question Homework Quiz</h4>
-            <p style="font-size:12px; opacity:0.9; margin:4px 0 10px 0;">3 quick questions based on today's Maths & Woodwork!</p>
-            <button class="btn btn-sm" style="background:#fff; color:var(--primary);" onclick="openQuizModal()">Start Daily Quiz (+30 XP)</button>
-          </div>
-
-          <!-- Newsletter Highlight Card -->
-          <div class="card" style="border-left:4px solid var(--primary);">
-            <span class="pill pill-primary">LATEST NEWSLETTER</span>
-            <h4 style="font-size:13px; font-weight:700; margin:6px 0 4px 0;">${state.news.title}</h4>
-            <ul style="font-size:12px; color:#334155; margin-left:16px;">
-              ${state.news.bullets.map(b=>`<li>${b}</li>`).join('')}
-            </ul>
-          </div>
-        </div>
-      </div>
-    `;
-  }
-
-  function renderStudentDiary(main) {
-    state.activeChild = 'thabo';
-    renderParentDiary(main);
-  }
-
-  // Quarterly Reports View (*Kwartaalverslae*)
-  function renderReportsView(main) {
-    const child = state.children[state.activeChild];
-    main.innerHTML = `
-      <div class="child-tabs-bar">
-        <button class="child-tab-pill ${state.activeChild==='thabo'?'active':''}" onclick="setChild('thabo')">
-          <span>👦 Thabo (Gr 9B • Hoërskool)</span>
-        </button>
-        <button class="child-tab-pill ${state.activeChild==='lerato'?'active':''}" onclick="setChild('lerato')">
-          <span>👧 Lerato (Gr 4A • Laerskool)</span>
-        </button>
-      </div>
-
-      <div class="report-card-banner">
-        <div>
-          <span class="pill pill-success" style="margin-bottom:6px;">OFFICIAL ACADEMIC RECORD</span>
-          <h2 style="font-size:18px; font-weight:700;">${child.name} - 2026 Kwartaalverslae</h2>
-          <p style="font-size:12px; opacity:0.9; margin-top:2px;">${child.school} • Grade ${child.grade}</p>
-        </div>
-        <div style="text-align:right;">
-          <div style="font-size:11px; opacity:0.8;">Latest Aggregate</div>
-          <div style="font-size:26px; font-weight:800;">${child.reports.term3.avg}</div>
-        </div>
-      </div>
-
-      <div style="display:grid; grid-template-columns:1fr; gap:12px;">
-        <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
-          <div>
-            <span class="pill pill-primary">TERM 3 (SEPTEMBER 2026)</span>
-            <h4 style="font-size:15px; font-weight:700; margin:4px 0;">Kwartaal 3 Akademiese Rapport</h4>
-            <p style="font-size:12px; color:var(--text-muted);">Aggregate: <strong>${child.reports.term3.avg}</strong> • Status: <strong style="color:var(--success);">${child.reports.term3.status}</strong></p>
-          </div>
-          <button class="btn btn-primary" onclick="alert('Downloading official signed PDF Report Card for Term 3...')">📥 Download PDF Report</button>
-        </div>
-
-        <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
-          <div>
-            <span class="pill pill-primary">TERM 2 (JUNE 2026)</span>
-            <h4 style="font-size:15px; font-weight:700; margin:4px 0;">Kwartaal 2 Akademiese Rapport</h4>
-            <p style="font-size:12px; color:var(--text-muted);">Aggregate: <strong>${child.reports.term2.avg}</strong> • Status: <strong style="color:var(--success);">${child.reports.term2.status}</strong></p>
-          </div>
-          <button class="btn btn-outline" onclick="alert('Downloading official signed PDF Report Card for Term 2...')">📥 Download PDF Report</button>
-        </div>
-
-        <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
-          <div>
-            <span class="pill pill-primary">TERM 1 (MARCH 2026)</span>
-            <h4 style="font-size:15px; font-weight:700; margin:4px 0;">Kwartaal 1 Akademiese Rapport</h4>
-            <p style="font-size:12px; color:var(--text-muted);">Aggregate: <strong>${child.reports.term1.avg}</strong> • Status: <strong style="color:var(--success);">${child.reports.term1.status}</strong></p>
-          </div>
-          <button class="btn btn-outline" onclick="alert('Downloading official signed PDF Report Card for Term 1...')">📥 Download PDF Report</button>
-        </div>
-      </div>
-    `;
-  }
-
-  // Events, Sokkies & Exams View
-  function renderEventsView(main) {
-    main.innerHTML = `
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-        <div>
-          <h2 style="font-size:17px; font-weight:700;">School Events, Sokkies & Exam Calendar</h2>
-          <p style="font-size:12px; color:var(--text-muted);">Official dates with grade participation rules.</p>
-        </div>
-        <button class="btn btn-primary btn-sm" onclick="showToast('📅 Calendar (.ics) synced to phone!')">📅 Sync to Phone Calendar</button>
-      </div>
-
-      <div style="display:grid; grid-template-columns:1fr; gap:10px;">
-        ${state.events.map(e => `
-          <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
-            <div>
-              <span class="pill ${e.type==='sport'?'pill-danger':e.type==='social'?'pill-warning':'pill-primary'}">${e.type.toUpperCase()}</span>
-              <h4 style="font-size:15px; font-weight:700; margin:4px 0;">${e.title}</h4>
-              <p style="font-size:12px; color:var(--text-muted);">📅 <strong>${e.date}</strong> • 🎯 Eligibility: <strong style="color:#0f172a;">${e.eligibility}</strong></p>
-            </div>
-            <button class="btn btn-outline btn-sm" onclick="showToast('Reminder set for ${e.title}!')">+ Reminder</button>
-          </div>
-        `).join('')}
-      </div>
-    `;
-  }
-
-  function renderNewsView(main) {
-    main.innerHTML = `
-      <div class="card" style="border-left: 4px solid var(--primary);">
-        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-          <div>
-            <span class="pill pill-primary">OFFICIAL WEEKLY NEWSLETTER</span>
-            <h3 style="font-size:16px; font-weight:700; margin:6px 0 2px 0;">${state.news.title}</h3>
-            <p style="font-size:12px; color:var(--text-muted);">Published by School Receptionist (Mrs. Botha)</p>
-          </div>
-          <button class="btn btn-outline btn-sm" onclick="alert('Downloading official 8-page PDF...')">📥 Download Full PDF</button>
-        </div>
-        <div style="margin-top:14px;">
-          <p style="font-size:13px; font-weight:700; color:#1e293b;">⚡ 3 Key Action Highlights for Parents:</p>
-          <ul style="font-size:13px; color:#334155; margin-left:18px; margin-top:6px; line-height:1.7;">
-            ${state.news.bullets.map(b=>`<li>${b}</li>`).join('')}
-          </ul>
-        </div>
-      </div>
-    `;
-  }
-
-  // ================= 2. TEACHER SCREENS (Multi-Class) =================
-  function renderTeacherPostView(main) {
-    main.innerHTML = `
-      <div class="layout-2col">
-        <div>
-          <div class="card">
-            <h3 style="font-size:15px; font-weight:700; margin-bottom:10px;">⚡ 10-Second Task Post</h3>
-            
-            <div class="form-group">
-              <label class="form-label">Select Class (You teach 3 classes)</label>
-              <select class="form-input" id="teacherClassSelect" onchange="switchTeacherClassKey(this.value)">
-                <option value="wood9b" ${state.activeTeacherClass==='wood9b'?'selected':''}>🪵 Graad 9B Woodwork (Period 4)</option>
-                <option value="wood9a" ${state.activeTeacherClass==='wood9a'?'selected':''}>🪵 Graad 9A Woodwork (Period 2)</option>
-                <option value="tech10a" ${state.activeTeacherClass==='tech10a'?'selected':''}>📐 Graad 10A Tegnologie / EGD (Period 6)</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">Instructions for Student Diary</label>
-              <textarea id="teachInput" class="form-input" rows="3" placeholder="e.g. Activity 4 sums 1-8. Sharpen chisel for practicals."></textarea>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">📸 Snap Blackboard Photo (Fast)</label>
-              <input type="file" accept="image/*" capture="environment" class="form-input" />
-            </div>
-
-            <button class="btn btn-primary" style="width:100%; padding:10px;" onclick="publishTeacherTask()">🚀 Post to Selected Class & Parents</button>
-          </div>
-        </div>
-
-        <div>
-          <div class="card">
-            <h4 style="font-size:13px; font-weight:700; margin-bottom:8px;">👨‍🏫 Active Teacher Profile</h4>
-            <p style="font-size:12px; color:#475569; line-height:1.8;">
-              Teacher: <strong>Mnr. J. van der Merwe</strong><br>
-              Subjects: <strong>Woodwork, EGD & Tech</strong><br>
-              Total Registered Learners: <strong>82 across 3 classes</strong>
-            </p>
-          </div>
-        </div>
-      </div>
-    `;
-  }
-
-  function renderTeacherRosterView(main) {
-    const cls = state.teacherClasses[state.activeTeacherClass];
-    main.innerHTML = `
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-        <div>
-          <h2 style="font-size:17px; font-weight:700;">Morning Roll Call & Book Check</h2>
-          <p style="font-size:12px; color:var(--text-muted);">Inspection for: <strong>${cls.title}</strong> (${cls.period})</p>
-        </div>
-        
-        <div>
-          <label style="font-size:12px; font-weight:600; margin-right:6px;">Switch Class:</label>
-          <select class="sim-select" style="background:#fff; color:#0f172a; border-color:var(--border);" onchange="switchTeacherClassKey(this.value)">
-            <option value="wood9b" ${state.activeTeacherClass==='wood9b'?'selected':''}>Gr 9B Woodwork</option>
-            <option value="wood9a" ${state.activeTeacherClass==='wood9a'?'selected':''}>Gr 9A Woodwork</option>
-            <option value="tech10a" ${state.activeTeacherClass==='tech10a'?'selected':''}>Gr 10A Tech</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-          <h4 style="font-size:14px; font-weight:700;">Student Submission List (${cls.code})</h4>
-          <span class="pill pill-success">${cls.students.filter(s=>s.status.includes('Done')).length} / ${cls.students.length} Completed</span>
-        </div>
-
-        ${cls.students.map(s => `
-          <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid var(--border);">
-            <div>
-              <strong>${s.name}</strong>
-              <div style="font-size:11px; color:var(--text-muted);">${s.status}</div>
-            </div>
-            <div>
-              ${s.doctorNote ? '<button class="btn btn-outline btn-sm" onclick="alert(\'Viewing Doctor Note: Excused for 2 days by Dr. Nel.\')">📄 View Doctor Note</button>' : ''}
-              ${!s.absent ? '<button class="btn btn-danger-soft btn-sm" onclick="showToast(\'Flagged ' + s.name + ' - Alert sent to parents!\')">Flag Incomplete</button>' : ''}
-            </div>
-          </div>
-        `).join('')}
-      </div>
-    `;
-  }
-
-  function renderTeacherReportsUploadView(main) {
-    main.innerHTML = `
-      <div class="card">
-        <h3 style="font-size:15px; font-weight:700; margin-bottom:6px;">📤 Upload Student Report Cards (PDF)</h3>
-        <p style="font-size:12px; color:var(--text-muted); margin-bottom:14px;">Upload batch PDF report cards generated from SASAMS / Edupac.</p>
-        
-        <div class="form-group">
-          <label class="form-label">Term</label>
-          <select class="form-input">
-            <option>Term 3 (September 2026)</option>
-            <option>Term 4 (Final 2026)</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Select PDF Report Files (or ZIP batch)</label>
-          <input type="file" multiple class="form-input" />
-        </div>
-
-        <button class="btn btn-primary" onclick="showToast('Uploaded 30 report cards securely to parent portals!')">Upload & Encrypt Reports</button>
-      </div>
-    `;
-  }
-
-  // ================= 3. OFFICE / ADMIN SCREENS =================
-  function renderAdminBroadcastView(main) {
-    main.innerHTML = `
-      <div class="card">
-        <span class="pill pill-danger" style="margin-bottom:6px;">⚠️ EMERGENCY BROADCAST</span>
-        <h3 style="font-size:15px; font-weight:700; margin-bottom:10px;">Emergency School Closure Notice</h3>
-        
-        <div class="form-group">
-          <label class="form-label">Broadcast Alert Message</label>
-          <input type="text" id="adminAlertMsg" class="form-input" value="${state.banner.text}" />
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Target Grades</label>
-          <select class="form-input" id="adminAlertTgt">
-            <option>Grades 4–12</option>
-            <option>All Grades (Gr R - Gr 12)</option>
-            <option>Grade R Only</option>
-          </select>
-        </div>
-
-        <button class="btn btn-primary" style="background:var(--danger);" onclick="updateAdminBanner()">🚨 Broadcast to All Parents & Students</button>
-      </div>
-    `;
-  }
-
-  function renderAdminNewsView(main) {
-    main.innerHTML = `
-      <div class="card">
-        <span class="pill pill-primary" style="margin-bottom:6px;">📰 NEWSLETTER PUBLISHER</span>
-        <h3 style="font-size:15px; font-weight:700; margin-bottom:10px;">Publish Weekly Highlights</h3>
-        
-        <div class="form-group">
-          <label class="form-label">Newsletter Title</label>
-          <input type="text" id="adminNewsTitle" class="form-input" value="${state.news.title}" />
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Attach 8-Page Full PDF</label>
-          <input type="file" class="form-input" />
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">3 Action Highlights (For Busy Parents)</label>
-          <textarea id="adminNewsBullets" class="form-input" rows="3">${state.news.bullets.join('\n')}</textarea>
-        </div>
-
-        <button class="btn btn-primary" onclick="updateAdminNews()">📤 Publish to All Parents</button>
-      </div>
-    `;
-  }
-
-  // 1-Click Event Presets for Admin (Zero-Effort Sokkie & Sport Management)
-  function renderAdminEventsView(main) {
-    main.innerHTML = `
-      <div class="layout-2col">
-        <div>
-          <div class="card">
-            <h3 style="font-size:15px; font-weight:700; margin-bottom:6px;">⚡ 1-Click Event & Sokkie Presets</h3>
-            <p style="font-size:12px; color:var(--text-muted); margin-bottom:14px;">Select a preset to auto-fill rules without typing!</p>
-
-            <div class="form-group">
-              <label class="form-label">Choose Event Template Preset</label>
-              <select class="form-input" id="eventPresetSelect" onchange="applyEventPreset(this.value)">
-                <option value="">-- Choose Template Preset --</option>
-                <option value="sokkie">🎉 Hoërskool Lente Sokkie (Gr 8–12)</option>
-                <option value="athletics">🏃 Interhoër Athletics (Early Closure)</option>
-                <option value="oueraand">👔 Algemene Ouer Aand (Parent Evening)</option>
-                <option value="exam">📝 Kwartaal Eksamen Sessie</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">Event Title</label>
-              <input type="text" id="eventTitleInput" class="form-input" placeholder="e.g. Lente Sokkie" />
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">Date & Time</label>
-              <input type="text" id="eventDateInput" class="form-input" placeholder="e.g. Vrydag 18:00 - 22:00" />
-            </div>
-
-            <div class="form-group">
-              <label class="form-label">Grade Eligibility</label>
-              <input type="text" id="eventEligInput" class="form-input" placeholder="e.g. Hoërskool Gr 8–12 Only" />
-            </div>
-
-            <button class="btn btn-primary" style="width:100%;" onclick="publishAdminEvent()">📅 Publish to School Calendar</button>
-          </div>
-        </div>
-
-        <div>
-          <div class="card">
-            <h4 style="font-size:13px; font-weight:700; margin-bottom:8px;">Active Events on Calendar</h4>
-            <div style="font-size:12px; line-height:1.8;">
-              ${state.events.map(e => `<div>📌 <strong>${e.title}</strong> (${e.date})</div>`).join('')}
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-  }
-
-  function renderAdminReportsDistView(main) {
-    main.innerHTML = `
-      <div class="card">
-        <h3 style="font-size:15px; font-weight:700; margin-bottom:6px;">📊 Report Card Distribution Center</h3>
-        <p style="font-size:12px; color:var(--text-muted); margin-bottom:14px;">Control when parents can see their children's quarterly report cards.</p>
-        
-        <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; border:1px solid var(--border); border-radius:8px; margin-bottom:10px;">
-          <div>
-            <strong>Term 3 Reports (September 2026)</strong>
-            <div style="font-size:11px; color:var(--success);">Status: Live & Downloadable for Parents</div>
-          </div>
-          <button class="btn btn-outline btn-sm" onclick="showToast('Term 3 Reports toggled!')">Toggle Visibility</button>
-        </div>
-
-        <div style="display:flex; justify-content:space-between; align-items:center; padding:12px; border:1px solid var(--border); border-radius:8px;">
-          <div>
-            <strong>Term 4 Final Reports (December 2026)</strong>
-            <div style="font-size:11px; color:var(--text-muted);">Status: Hidden (Awaiting Final Exams)</div>
-          </div>
-          <button class="btn btn-primary btn-sm" onclick="showToast('Term 4 Reports Published!')">Release to Parents</button>
-        </div>
-      </div>
-    `;
-  }
-
-  // ================= LOGIC & ACTIONS =================
-  function switchPersona(p) {
-    state.activePersona = p;
-    state.activeTab = p === 'teacher' ? 'teach-post' : p === 'admin' ? 'admin-broadcast' : 'diary';
-    save();
-    renderAll();
-    showToast(`Logged in as ${document.getElementById('personaSelector').selectedOptions[0].text}`);
-  }
-
-  function setTab(t) {
-    state.activeTab = t;
-    save();
-    renderAll();
-  }
-
-  function setChild(c) {
-    state.activeChild = c;
-    save();
-    renderAll();
-  }
-
-  function switchTeacherClassKey(clsKey) {
-    state.activeTeacherClass = clsKey;
-    save();
-    renderAll();
-    showToast(`Switched class to ${state.teacherClasses[clsKey].title}`);
-  }
-
-  function toggleTaskStatus(taskId, target) {
-    const child = state.children[state.activeChild];
-    const task = child.tasks.find(x => x.id === taskId);
-    if (task) {
-      task.status = task.status === target ? 'not-started' : target;
-      save();
-      renderAll();
-      showToast(`Updated status for ${task.subject}!`);
-    }
-  }
-
-  function publishTeacherTask() {
-    const txt = document.getElementById('teachInput').value;
-    if (!txt) return alert("Please type instructions!");
-    
-    state.children.thabo.tasks.unshift({
-      id: 't-' + Date.now(),
-      subject: 'Woodwork / Houtwerk',
-      teacher: 'Mnr. J. van der Merwe',
-      title: 'Class Assignment',
-      desc: txt,
-      due: 'Tomorrow',
-      status: 'not-started',
-      boardImg: null
-    });
-    save();
-    showToast("⚡ Posted in 10s to class & parent portals!");
-    document.getElementById('teachInput').value = '';
-    renderAll();
-  }
-
-  function updateAdminBanner() {
-    state.banner.text = document.getElementById('adminAlertMsg').value;
-    state.banner.target = document.getElementById('adminAlertTgt').value;
-    save();
-    renderAll();
-    showToast("🚨 Emergency Banner updated for all parents!");
-  }
-
-  function updateAdminNews() {
-    state.news.title = document.getElementById('adminNewsTitle').value;
-    state.news.bullets = document.getElementById('adminNewsBullets').value.split('\n').filter(x => x.trim() !== '');
-    save();
-    renderAll();
-    showToast("📰 Newsletter published to all parent portals!");
-  }
-
-  // Event Presets (Zero-effort Sokkie & Athletics management)
-  function applyEventPreset(val) {
-    if (val === 'sokkie') {
-      document.getElementById('eventTitleInput').value = "Graad 8-12 Lente Sokkie 🎉";
-      document.getElementById('eventDateInput').value = "Vrydag 18:00 - 22:00";
-      document.getElementById('eventEligInput').value = "Hoërskool Gr 8–12 Only (R50 Kaartjie)";
-    } else if (val === 'athletics') {
-      document.getElementById('eventTitleInput').value = "Interhoër / Interprimary Atletiek (Vroeg Sluit)";
-      document.getElementById('eventDateInput').value = "Woensdag 08:00 (Sluit 12:30)";
-      document.getElementById('eventEligInput').value = "Grades 4–12 (Gr R–3 Uitgesluit)";
-    } else if (val === 'oueraand') {
-      document.getElementById('eventTitleInput').value = "Algemene Ouer Aand (Parent Evening)";
-      document.getElementById('eventDateInput').value = "Donderdag 17:30 - 20:00";
-      document.getElementById('eventEligInput').value = "All Parents (Alle Grade)";
-    } else if (val === 'exam') {
-      document.getElementById('eventTitleInput').value = "Kwartaal 3 Eindeksamen Sessie";
-      document.getElementById('eventDateInput').value = "20 Okt - 15 Nov";
-      document.getElementById('eventEligInput').value = "Grades 7–12";
-    }
-  }
-
-  function publishAdminEvent() {
-    const title = document.getElementById('eventTitleInput').value;
-    const date = document.getElementById('eventDateInput').value;
-    const elig = document.getElementById('eventEligInput').value;
-    if (!title) return alert("Please complete event title!");
-
-    state.events.unshift({
-      id: 'e-' + Date.now(),
-      title: title,
-      date: date,
-      eligibility: elig,
-      type: title.toLowerCase().includes('sokkie') ? 'social' : 'meeting'
-    });
-    save();
-    showToast("🎉 Event published to school calendar & parent feeds!");
-    renderAll();
-  }
-
-  // 3-Question Quiz Modal Logic
-  function openQuizModal() { document.getElementById('quizModal').classList.remove('hidden'); }
-  function answerQuiz(qNum, isCorrect) {
-    const body = document.getElementById('quizBody');
-    if (qNum === 1) {
-      body.innerHTML = `
-        <div style="margin-bottom:16px;">
-          <span class="pill pill-warning">Question 2 of 3: Woodwork / Houtwerk</span>
-          <p style="font-size:14px; font-weight:700; margin:8px 0;">Which tool is used to test if a wooden block has a 90-degree corner?</p>
-          <div style="display:flex; flex-direction:column; gap:6px;">
-            <button class="btn btn-outline" style="justify-content:flex-start;" onclick="answerQuiz(2, false)">A) Sandpaper</button>
-            <button class="btn btn-outline" style="justify-content:flex-start;" onclick="answerQuiz(2, true)">B) Try Square (Winkelhaak)</button>
-            <button class="btn btn-outline" style="justify-content:flex-start;" onclick="answerQuiz(2, false)">C) Chisel</button>
-          </div>
-        </div>
-      `;
-    } else if (qNum === 2) {
-      body.innerHTML = `
-        <div style="margin-bottom:16px;">
-          <span class="pill pill-success">Question 3 of 3: English FAL</span>
-          <p style="font-size:14px; font-weight:700; margin:8px 0;">What is the past tense of the verb 'run'?</p>
-          <div style="display:flex; flex-direction:column; gap:6px;">
-            <button class="btn btn-outline" style="justify-content:flex-start;" onclick="answerQuiz(3, true)">A) Ran</button>
-            <button class="btn btn-outline" style="justify-content:flex-start;" onclick="answerQuiz(3, false)">B) Running</button>
-          </div>
-        </div>
-      `;
-    } else {
-      body.innerHTML = `
-        <div style="text-align:center; padding:20px;">
-          <span style="font-size:36px;">🎉</span>
-          <h3 style="font-size:18px; font-weight:700; margin:10px 0;">Daily Challenge Complete!</h3>
-          <p style="font-size:13px; color:var(--text-muted); margin-bottom:14px;">Great work! You scored 3/3 and earned <strong>+30 XP</strong> today!</p>
-          <button class="btn btn-primary" onclick="closeModal('quizModal')">Awesome!</button>
-        </div>
-      `;
-    }
-  }
-
-  function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
-  function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-  function submitAbsence() {
-    closeModal('absenceModal');
-    showToast("🏥 Doctor's note submitted directly to register teacher!");
-  }
-
-  function toggleDevice(m) { document.getElementById('appFrame').classList.toggle('mobile-mode', m === 'mobile'); }
-
-  function uploadCrest(input) {
-    if (input.files && input.files[0]) {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        document.getElementById('crestInitials').classList.add('hidden');
-        const img = document.getElementById('crestImg');
-        img.src = e.target.result;
+      header.classList.remove('hidden');
+      bNav.classList.remove('hidden');
+      vp.classList.remove('no-bottom-nav');
+      
+      const school = db.schools[user.schoolCode] || { name: "SkoolLoop School", logo: null, banner: null };
+      document.getElementById('headerSchoolName').innerText = school.name;
+      document.getElementById('headerUserName').innerText = `${user.name} (${user.role.toUpperCase()})`;
+      
+      if (school.logo) {
+        document.getElementById('headerCrestLetters').classList.add('hidden');
+        const img = document.getElementById('headerCrestImg');
+        img.src = school.logo;
         img.classList.remove('hidden');
-        showToast("School Crest updated!");
-      };
-      reader.readAsDataURL(input.files[0]);
+      } else {
+        document.getElementById('headerCrestLetters').innerText = school.name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
+      }
+
+      if (school.emergencyBanner && school.emergencyBanner.active) {
+        ticker.classList.remove('hidden');
+        document.getElementById('tickerText').innerHTML = `📢 <strong>Notice:</strong> ${school.emergencyBanner.text}`;
+        document.getElementById('tickerGrade').innerText = school.emergencyBanner.target;
+      } else {
+        ticker.classList.add('hidden');
+      }
+
+      renderBottomNav(user.role);
+      renderRoleDashboard(user, vp);
     }
   }
 
-  function resetData() {
-    localStorage.removeItem('skoolloop_master');
-    state = defaultState;
-    save();
-    renderAll();
-    showToast("Demo reset to clean defaults!");
+  // ================= 1. AUTHENTICATION & ONBOARDING SCREENS =================
+  function renderAuthScreen(vp) {
+    vp.innerHTML = `
+      <div style="padding: 24px 16px; text-align:center;">
+        <div style="width:60px; height:60px; border-radius:16px; background:var(--primary); color:#fff; display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:800; margin: 0 auto 12px auto;">
+          SL
+        </div>
+        <h2 style="font-size:20px; font-weight:800; color:#0f172a;">SkoolLoop Cloud</h2>
+        <p style="font-size:12px; color:var(--text-muted); margin-bottom:20px;">Digital Homework Diary & School Portal</p>
+
+        <!-- Auth Switch Tabs -->
+        <div style="display:flex; background:#e2e8f0; border-radius:10px; padding:3px; margin-bottom:18px;">
+          <button id="btnTabLogin" class="btn btn-sm" style="flex:1; background:#fff; color:var(--text);" onclick="showAuthTab('login')">Sign In</button>
+          <button id="btnTabRegister" class="btn btn-sm" style="flex:1; background:transparent; color:var(--text-muted);" onclick="showAuthTab('register')">New Registration</button>
+        </div>
+
+        <!-- Login Form -->
+        <div id="loginFormSection">
+          <div class="card" style="margin:0 0 14px 0; text-align:left;">
+            <div class="form-group">
+              <label class="form-label">Email / Phone / Student ID</label>
+              <input type="text" id="loginUsername" class="form-input" placeholder="e.g. parent@gmail.com or STU123" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Password</label>
+              <input type="password" id="loginPassword" class="form-input" placeholder="••••••••" />
+            </div>
+            <button class="btn btn-primary" onclick="performLogin()">Sign In to Portal</button>
+          </div>
+          <button class="btn btn-outline btn-sm" style="width:100%;" onclick="loadSampleDataAndLogin()">⚡ Quick Load Demo Data</button>
+        </div>
+
+        <!-- Role-Based Registration Selector -->
+        <div id="registerFormSection" class="hidden" style="text-align:left;">
+          <div class="form-group">
+            <label class="form-label">Who is Registering?</label>
+            <select class="form-input" id="regRoleSelect" onchange="renderSpecificRegForm(this.value)">
+              <option value="school">🏫 Register a New School (Principal / Bursar)</option>
+              <option value="teacher">👨‍🏫 Register as a Teacher</option>
+              <option value="parent">👨‍👩‍👧 Register as a Parent</option>
+              <option value="student">🎓 Register as a High School Student (Gr 8–12)</option>
+              <option value="staff">💼 Register as School Office / Reception Staff</option>
+            </select>
+          </div>
+          <div id="dynamicRegFormContainer"></div>
+        </div>
+      </div>
+    `;
+    renderSpecificRegForm('school');
+  }
+
+  function showAuthTab(tab) {
+    document.getElementById('loginFormSection').classList.toggle('hidden', tab !== 'login');
+    document.getElementById('registerFormSection').classList.toggle('hidden', tab !== 'register');
+    document.getElementById('btnTabLogin').style.background = tab === 'login' ? '#fff' : 'transparent';
+    document.getElementById('btnTabLogin').style.color = tab === 'login' ? 'var(--text)' : 'var(--text-muted)';
+    document.getElementById('btnTabRegister').style.background = tab === 'register' ? '#fff' : 'transparent';
+    document.getElementById('btnTabRegister').style.color = tab === 'register' ? 'var(--text)' : 'var(--text-muted)';
+  }
+
+  function renderSpecificRegForm(role) {
+    const c = document.getElementById('dynamicRegFormContainer');
+    
+    // 1. School Registration
+    if (role === 'school') {
+      c.innerHTML = `
+        <div class="card" style="margin:0 0 14px 0;">
+          <h4 style="font-size:13px; font-weight:700; margin-bottom:10px; color:var(--primary);">🏫 School Registration</h4>
+          <div class="form-group">
+            <label class="form-label">School Official Name</label>
+            <input type="text" id="regSchoolName" class="form-input" placeholder="e.g. Hoërskool Centurion" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">School Type</label>
+            <select class="form-input" id="regSchoolType">
+              <option value="high">High School (Hoërskool / Grades 8–12)</option>
+              <option value="primary">Primary School (Laerskool / Grades R–7)</option>
+              <option value="combined">Combined School (Gr R – 12)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Create Unique School Code</label>
+            <input type="text" id="regSchoolCode" class="form-input" placeholder="e.g. HCEN-2026" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Set Staff & Teacher Master PIN</label>
+            <input type="password" id="regSchoolPin" class="form-input" placeholder="e.g. STAFF2026" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Admin Email & Password</label>
+            <input type="email" id="regSchoolAdminEmail" class="form-input" placeholder="admin@school.co.za" style="margin-bottom:6px;" />
+            <input type="password" id="regSchoolAdminPass" class="form-input" placeholder="Admin Password" />
+          </div>
+          <button class="btn btn-primary" onclick="submitSchoolReg()">Create School & Sign In</button>
+        </div>
+      `;
+    } 
+    // 2. Teacher Registration
+    else if (role === 'teacher') {
+      c.innerHTML = `
+        <div class="card" style="margin:0 0 14px 0;">
+          <h4 style="font-size:13px; font-weight:700; margin-bottom:10px; color:var(--primary);">👨‍🏫 Teacher Sign-Up</h4>
+          <div class="form-group">
+            <label class="form-label">School Code</label>
+            <input type="text" id="regTeacherSchoolCode" class="form-input" placeholder="Enter school code (e.g. HCEN-2026)" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">School Staff Master PIN</label>
+            <input type="password" id="regTeacherPin" class="form-input" placeholder="Enter Staff PIN from school" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Title & Full Name</label>
+            <input type="text" id="regTeacherName" class="form-input" placeholder="e.g. Mnr. J. van der Merwe" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">First Subject & Class</label>
+            <input type="text" id="regTeacherSubject" class="form-input" placeholder="e.g. Woodwork / Houtwerk" style="margin-bottom:6px;" />
+            <input type="text" id="regTeacherClassCode" class="form-input" placeholder="Class Code (e.g. WOOD-9B)" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email & Password</label>
+            <input type="email" id="regTeacherEmail" class="form-input" placeholder="teacher@school.co.za" style="margin-bottom:6px;" />
+            <input type="password" id="regTeacherPass" class="form-input" placeholder="Create Password" />
+          </div>
+          <button class="btn btn-primary" onclick="submitTeacherReg()">Register Teacher Account</button>
+        </div>
+      `;
+    }
+    // 3. Parent Registration
+    else if (role === 'parent') {
+      c.innerHTML = `
+        <div class="card" style="margin:0 0 14px 0;">
+          <h4 style="font-size:13px; font-weight:700; margin-bottom:10px; color:var(--primary);">👨‍👩‍👧 Parent Sign-Up</h4>
+          <div class="form-group">
+            <label class="form-label">Parent Full Name & Mobile</label>
+            <input type="text" id="regParentName" class="form-input" placeholder="e.g. Mrs. Sarah Mokoena" style="margin-bottom:6px;" />
+            <input type="tel" id="regParentPhone" class="form-input" placeholder="e.g. 082 123 4567" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">School Code</label>
+            <input type="text" id="regParentSchoolCode" class="form-input" placeholder="Enter child's school code" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Add First Child</label>
+            <input type="text" id="regParentChildName" class="form-input" placeholder="Child Full Name (e.g. Thabo Mokoena)" style="margin-bottom:6px;" />
+            <select class="form-input" id="regParentChildGrade" style="margin-bottom:6px;">
+              <option>Grade R</option><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option>
+              <option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option>
+              <option selected>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option>
+            </select>
+            <input type="text" id="regParentClassCodes" class="form-input" placeholder="Subject Codes (e.g. WOOD-9B, MATH-9)" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email & Password</label>
+            <input type="email" id="regParentEmail" class="form-input" placeholder="parent@gmail.com" style="margin-bottom:6px;" />
+            <input type="password" id="regParentPass" class="form-input" placeholder="Create Password" />
+          </div>
+          <button class="btn btn-primary" onclick="submitParentReg()">Register Parent & Children</button>
+        </div>
+      `;
+    }
+    // 4. Student Registration (Gr 8–12 Only)
+    else if (role === 'student') {
+      c.innerHTML = `
+        <div class="card" style="margin:0 0 14px 0;">
+          <h4 style="font-size:13px; font-weight:700; margin-bottom:10px; color:var(--primary);">🎓 High School Student Sign-Up</h4>
+          <div class="form-group">
+            <label class="form-label">Your Grade (High School Only)</label>
+            <select class="form-input" id="regStudentGrade" onchange="checkStudentGradeEligibility(this.value)">
+              <option value="9">Grade 9</option>
+              <option value="8">Grade 8</option>
+              <option value="10">Grade 10</option>
+              <option value="11">Grade 11</option>
+              <option value="12">Grade 12</option>
+              <option value="primary">Grade R to 7 (Primary)</option>
+            </select>
+          </div>
+          <div id="studentFormFields">
+            <div class="form-group">
+              <label class="form-label">School Code</label>
+              <input type="text" id="regStudentSchoolCode" class="form-input" placeholder="e.g. HCEN-2026" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Your Full Name & Student ID</label>
+              <input type="text" id="regStudentName" class="form-input" placeholder="e.g. Thabo Mokoena" style="margin-bottom:6px;" />
+              <input type="text" id="regStudentID" class="form-input" placeholder="Student Admission Number (e.g. STU902)" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Subject / Class Codes to Join</label>
+              <input type="text" id="regStudentClassCodes" class="form-input" placeholder="e.g. WOOD-9B, MATH-9" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email / Username & Password</label>
+              <input type="text" id="regStudentUser" class="form-input" placeholder="thabo@email.com or username" style="margin-bottom:6px;" />
+              <input type="password" id="regStudentPass" class="form-input" placeholder="Create Password" />
+            </div>
+            <button class="btn btn-primary" onclick="submitStudentReg()">Create Student Account</button>
+          </div>
+        </div>
+      `;
+    }
+    // 5. Staff Registration
+    else if (role === 'staff') {
+      c.innerHTML = `
+        <div class="card" style="margin:0 0 14px 0;">
+          <h4 style="font-size:13px; font-weight:700; margin-bottom:10px; color:var(--primary);">💼 School Office / Reception</h4>
+          <div class="form-group">
+            <label class="form-label">School Code & Staff Master PIN</label>
+            <input type="text" id="regStaffSchoolCode" class="form-input" placeholder="School Code (e.g. HCEN-2026)" style="margin-bottom:6px;" />
+            <input type="password" id="regStaffPin" class="form-input" placeholder="Staff Master PIN" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Staff Full Name & Title</label>
+            <input type="text" id="regStaffName" class="form-input" placeholder="e.g. Mrs. Botha - Reception" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email & Password</label>
+            <input type="email" id="regStaffEmail" class="form-input" placeholder="office@school.co.za" style="margin-bottom:6px;" />
+            <input type="password" id="regStaffPass" class="form-input" placeholder="Create Password" />
+          </div>
+          <button class="btn btn-primary" onclick="submitStaffReg()">Register Office Account</button>
+        </div>
+      `;
+    }
+  }
+
+  function checkStudentGradeEligibility(val) {
+    if (val === 'primary') {
+      alert("⚠️ Notice: Primary School learners (Grade R to 7) cannot sign up independently. A parent must create an account and manage your diary.");
+      document.getElementById('regStudentGrade').value = '9';
+    }
+  }
+
+  // ================= 2. REGISTRATION SUBMISSIONS =================
+  function submitSchoolReg() {
+    const name = document.getElementById('regSchoolName').value.trim();
+    const code = document.getElementById('regSchoolCode').value.trim().toUpperCase();
+    const pin = document.getElementById('regSchoolPin').value.trim();
+    const email = document.getElementById('regSchoolAdminEmail').value.trim();
+    const pass = document.getElementById('regSchoolAdminPass').value.trim();
+    if (!name || !code || !pin || !email || !pass) return alert("Please fill in all school registration fields!");
+
+    db.schools[code] = {
+      name: name,
+      code: code,
+      pin: pin,
+      type: document.getElementById('regSchoolType').value,
+      logo: null,
+      emergencyBanner: { active: false, text: "", target: "" }
+    };
+
+    const user = {
+      id: 'usr_' + Date.now(),
+      role: 'school_admin',
+      name: 'Principal / Admin (' + name + ')',
+      email: email,
+      pass: pass,
+      schoolCode: code
+    };
+    db.users.push(user);
+    db.currentUser = user;
+    saveDB();
+    showToast(`School ${name} registered successfully!`);
+    router();
+  }
+
+  function submitTeacherReg() {
+    const sCode = document.getElementById('regTeacherSchoolCode').value.trim().toUpperCase();
+    const pin = document.getElementById('regTeacherPin').value.trim();
+    const name = document.getElementById('regTeacherName').value.trim();
+    const subj = document.getElementById('regTeacherSubject').value.trim();
+    const cCode = document.getElementById('regTeacherClassCode').value.trim().toUpperCase();
+    const email = document.getElementById('regTeacherEmail').value.trim();
+    const pass = document.getElementById('regTeacherPass').value.trim();
+
+    const school = db.schools[sCode];
+    if (!school) return alert(`School Code '${sCode}' not found! Please register the school first.`);
+    if (school.pin !== pin) return alert("Invalid Staff Master PIN for this school!");
+
+    const user = {
+      id: 'tch_' + Date.now(),
+      role: 'teacher',
+      name: name,
+      email: email,
+      pass: pass,
+      schoolCode: sCode,
+      subject: subj,
+      classCode: cCode
+    };
+    db.users.push(user);
+    db.currentUser = user;
+    saveDB();
+    showToast(`Welcome ${name}! Teacher account ready.`);
+    router();
+  }
+
+  function submitParentReg() {
+    const name = document.getElementById('regParentName').value.trim();
+    const phone = document.getElementById('regParentPhone').value.trim();
+    const sCode = document.getElementById('regParentSchoolCode').value.trim().toUpperCase();
+    const childName = document.getElementById('regParentChildName').value.trim();
+    const grade = document.getElementById('regParentChildGrade').value;
+    const classCodes = document.getElementById('regParentClassCodes').value.trim().toUpperCase().split(',').map(x=>x.trim());
+    const email = document.getElementById('regParentEmail').value.trim();
+    const pass = document.getElementById('regParentPass').value.trim();
+
+    if (!name || !sCode || !childName || !email || !pass) return alert("Please fill all parent fields!");
+
+    const childId = 'ch_' + Date.now();
+    const user = {
+      id: 'par_' + Date.now(),
+      role: 'parent',
+      name: name,
+      phone: phone,
+      email: email,
+      pass: pass,
+      schoolCode: sCode,
+      children: [
+        { id: childId, name: childName, grade: grade, classCodes: classCodes }
+      ]
+    };
+    db.users.push(user);
+    db.currentUser = user;
+    saveDB();
+    showToast(`Parent account created for ${name}!`);
+    router();
+  }
+
+  function submitStudentReg() {
+    const sCode = document.getElementById('regStudentSchoolCode').value.trim().toUpperCase();
+    const name = document.getElementById('regStudentName').value.trim();
+    const stuId = document.getElementById('regStudentID').value.trim();
+    const grade = document.getElementById('regStudentGrade').value;
+    const classCodes = document.getElementById('regStudentClassCodes').value.trim().toUpperCase().split(',').map(x=>x.trim());
+    const userAcc = document.getElementById('regStudentUser').value.trim();
+    const pass = document.getElementById('regStudentPass').value.trim();
+
+    if (!name || !sCode || !stuId || !userAcc || !pass) return alert("Please fill all student fields!");
+
+    const user = {
+      id: stuId,
+      role: 'student',
+      name: name,
+      email: userAcc,
+      pass: pass,
+      schoolCode: sCode,
+      grade: "Grade " + grade,
+      classCodes: classCodes
+    };
+    db.users.push(user);
+    db.currentUser = user;
+    saveDB();
+    showToast(`Welcome ${name}! Student diary active.`);
+    router();
+  }
+
+  function submitStaffReg() {
+    const sCode = document.getElementById('regStaffSchoolCode').value.trim().toUpperCase();
+    const pin = document.getElementById('regStaffPin').value.trim();
+    const name = document.getElementById('regStaffName').value.trim();
+    const email = document.getElementById('regStaffEmail').value.trim();
+    const pass = document.getElementById('regStaffPass').value.trim();
+
+    const school = db.schools[sCode];
+    if (!school) return alert(`School Code '${sCode}' not found!`);
+    if (school.pin !== pin) return alert("Invalid Staff Master PIN!");
+
+    const user = {
+      id: 'stf_' + Date.now(),
+      role: 'school_admin',
+      name: name,
+      email: email,
+      pass: pass,
+      schoolCode: sCode
+    };
+    db.users.push(user);
+    db.currentUser = user;
+    saveDB();
+    showToast(`Staff account active for ${name}!`);
+    router();
+  }
+
+  function performLogin() {
+    const u = document.getElementById('loginUsername').value.trim();
+    const p = document.getElementById('loginPassword').value.trim();
+    const found = db.users.find(x => (x.email === u || x.id === u) && x.pass === p);
+    if (found) {
+      db.currentUser = found;
+      saveDB();
+      showToast(`Welcome back, ${found.name}!`);
+      router();
+    } else {
+      alert("Invalid login credentials. Click 'Quick Load Demo Data' if you want a test account.");
+    }
+  }
+
+  function logout() {
+    db.currentUser = null;
+    saveDB();
+    showToast("Logged out safely.");
+    router();
+  }
+
+  // ================= 3. NATIVE MOBILE BOTTOM NAV BAR =================
+  let currentActiveTab = 'diary';
+  function renderBottomNav(role) {
+    const nav = document.getElementById('bottomNav');
+    if (role === 'parent') {
+      nav.innerHTML = `
+        <button class="nav-tab-btn ${currentActiveTab==='diary'?'active':''}" onclick="setAppTab('diary')"><span class="icon">📋</span>Diary</button>
+        <button class="nav-tab-btn ${currentActiveTab==='reports'?'active':''}" onclick="setAppTab('reports')"><span class="icon">📊</span>Reports</button>
+        <button class="nav-tab-btn ${currentActiveTab==='absence'?'active':''}" onclick="setAppTab('absence')"><span class="icon">🏥</span>Absence</button>
+        <button class="nav-tab-btn ${currentActiveTab==='news'?'active':''}" onclick="setAppTab('news')"><span class="icon">📰</span>News</button>
+      `;
+    } else if (role === 'student') {
+      nav.innerHTML = `
+        <button class="nav-tab-btn ${currentActiveTab==='diary'?'active':''}" onclick="setAppTab('diary')"><span class="icon">📚</span>My Tasks</button>
+        <button class="nav-tab-btn ${currentActiveTab==='quiz'?'active':''}" onclick="setAppTab('quiz')"><span class="icon">⚡</span>Daily Quiz</button>
+        <button class="nav-tab-btn ${currentActiveTab==='reports'?'active':''}" onclick="setAppTab('reports')"><span class="icon">📊</span>Reports</button>
+        <button class="nav-tab-btn ${currentActiveTab==='events'?'active':''}" onclick="setAppTab('events')"><span class="icon">🎉</span>Events</button>
+      `;
+    } else if (role === 'teacher') {
+      nav.innerHTML = `
+        <button class="nav-tab-btn ${currentActiveTab==='post'?'active':''}" onclick="setAppTab('post')"><span class="icon">⚡</span>Post Task</button>
+        <button class="nav-tab-btn ${currentActiveTab==='roster'?'active':''}" onclick="setAppTab('roster')"><span class="icon">👥</span>Roll Call</button>
+        <button class="nav-tab-btn ${currentActiveTab==='events'?'active':''}" onclick="setAppTab('events')"><span class="icon">📅</span>Calendar</button>
+      `;
+    } else if (role === 'school_admin') {
+      nav.innerHTML = `
+        <button class="nav-tab-btn ${currentActiveTab==='broadcast'?'active':''}" onclick="setAppTab('broadcast')"><span class="icon">🚨</span>Alerts</button>
+        <button class="nav-tab-btn ${currentActiveTab==='news'?'active':''}" onclick="setAppTab('news')"><span class="icon">📰</span>Newsletters</button>
+        <button class="nav-tab-btn ${currentActiveTab==='events'?'active':''}" onclick="setAppTab('events')"><span class="icon">🎉</span>Events</button>
+      `;
+    }
+  }
+
+  function setAppTab(tab) {
+    currentActiveTab = tab;
+    renderBottomNav(db.currentUser.role);
+    renderRoleDashboard(db.currentUser, document.getElementById('mainViewport'));
+  }
+
+  // ================= 4. ROLE DASHBOARD ROUTER =================
+  function renderRoleDashboard(user, vp) {
+    if (user.role === 'parent') renderParentView(user, vp);
+    else if (user.role === 'student') renderStudentView(user, vp);
+    else if (user.role === 'teacher') renderTeacherView(user, vp);
+    else if (user.role === 'school_admin') renderAdminView(user, vp);
+  }
+
+  // PARENT VIEW
+  let activeParentChildIndex = 0;
+  function renderParentView(user, vp) {
+    if (!user.children || user.children.length === 0) {
+      vp.innerHTML = `<div class="card"><p>No children linked yet. Tap below to link a child.</p></div>`;
+      return;
+    }
+    const child = user.children[activeParentChildIndex];
+    const childTasks = db.homework.filter(h => child.classCodes.includes(h.classCode));
+
+    if (currentActiveTab === 'diary') {
+      vp.innerHTML = `
+        <div style="padding: 12px 16px 0 16px;">
+          <div style="display:flex; gap:8px; overflow-x:auto;">
+            ${user.children.map((c, i) => `
+              <button class="btn btn-sm ${i===activeParentChildIndex?'btn-primary':'btn-outline'}" onclick="activeParentChildIndex=${i}; renderParentView(db.currentUser, document.getElementById('mainViewport'));">
+                ${c.name} (${c.grade})
+              </button>
+            `).join('')}
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <h3 style="font-size:15px; font-weight:700;">${child.name}'s Tasks</h3>
+            <span class="pill pill-primary">${childTasks.length} Assigned</span>
+          </div>
+
+          ${childTasks.length === 0 ? '<p style="font-size:12px; color:var(--text-muted);">No homework assigned for this class yet.</p>' : ''}
+
+          ${childTasks.map(t => `
+            <div class="task-card">
+              <div style="display:flex; justify-content:space-between;">
+                <div>
+                  <span class="pill pill-primary">${t.subject}</span>
+                  <span style="font-size:11px; color:var(--text-muted); margin-left:4px;">👨‍🏫 ${t.teacherName}</span>
+                  <h4 class="task-title" style="font-size:14px; margin:6px 0 2px 0;">${t.title}</h4>
+                  <p style="font-size:12px; color:#475569;">${t.desc}</p>
+                </div>
+                <span style="font-size:11px; color:var(--danger); font-weight:700;">${t.due}</span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    } else if (currentActiveTab === 'reports') {
+      vp.innerHTML = `
+        <div class="card">
+          <span class="pill pill-success" style="margin-bottom:6px;">POPIA PRIVATE ACADEMIC RECORD</span>
+          <h3 style="font-size:16px; font-weight:700;">${child.name} - Official Report Cards</h3>
+          <p style="font-size:12px; color:var(--text-muted); margin: 4px 0 14px 0;">Only you can view and download ${child.name}'s report cards.</p>
+          
+          <div style="padding:10px; border:1px solid var(--border); border-radius:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <strong>Term 3 (September)</strong>
+              <div style="font-size:11px; color:var(--success);">Aggregate: 78% • Passed with Distinction</div>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="alert('Downloading official signed PDF for ${child.name}...')">📥 PDF</button>
+          </div>
+        </div>
+      `;
+    } else if (currentActiveTab === 'absence') {
+      vp.innerHTML = `
+        <div class="card">
+          <h3 style="font-size:15px; font-weight:700; margin-bottom:10px;">🏥 Submit Doctor's Note for ${child.name}</h3>
+          <div class="form-group">
+            <label class="form-label">Reason</label>
+            <select class="form-input">
+              <option>Illness (Doctor visited / Doktersbrief attached)</option>
+              <option>Family Emergency</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">📸 Photo of Doctor's Note (Medical Certificate)</label>
+            <input type="file" accept="image/*" capture="environment" class="form-input" />
+          </div>
+          <button class="btn btn-primary" onclick="showToast('Doctor note submitted to register teacher!')">Send Note to Teacher</button>
+        </div>
+      `;
+    } else if (currentActiveTab === 'news') {
+      renderNewslettersView(vp);
+    }
+  }
+
+  // STUDENT VIEW
+  function renderStudentView(user, vp) {
+    const studentTasks = db.homework.filter(h => user.classCodes.includes(h.classCode));
+
+    if (currentActiveTab === 'diary') {
+      vp.innerHTML = `
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <h3 style="font-size:15px; font-weight:700;">My Subjects & Homework</h3>
+            <span class="pill pill-warning">${studentTasks.length} Active</span>
+          </div>
+          ${studentTasks.length === 0 ? '<p style="font-size:12px; color:var(--text-muted);">No tasks assigned today. Enjoy your afternoon!</p>' : ''}
+          ${studentTasks.map(t => `
+            <div class="task-card">
+              <span class="pill pill-primary">${t.subject}</span>
+              <span style="font-size:11px; color:var(--text-muted); margin-left:4px;">👨‍🏫 ${t.teacherName}</span>
+              <h4 style="font-size:14px; margin:6px 0 2px 0;">${t.title}</h4>
+              <p style="font-size:12px; color:#475569;">${t.desc}</p>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    } else if (currentActiveTab === 'quiz') {
+      vp.innerHTML = `
+        <div class="card" style="background:linear-gradient(135deg, #4338ca, #6366f1); color:#fff;">
+          <span class="pill" style="background:rgba(255,255,255,0.2); color:#fff; margin-bottom:8px;">⚡ DAILY 3-QUESTION CHALLENGE</span>
+          <h3 style="font-size:16px; font-weight:700;">Maths & Language Breinkraker</h3>
+          <p style="font-size:12px; opacity:0.9; margin:6px 0 14px 0;">Earn +30 XP daily streak points!</p>
+          <p style="font-size:14px; font-weight:700; margin-bottom:10px;">Q1: What is 15 × 6 − 18?</p>
+          <button class="btn btn-outline btn-sm" style="background:#fff; color:var(--primary); margin-bottom:6px;" onclick="alert('Correct! 72! +10 Points')">A) 72</button>
+          <button class="btn btn-outline btn-sm" style="background:#fff; color:var(--primary);" onclick="alert('Try again!')">B) 64</button>
+        </div>
+      `;
+    } else if (currentActiveTab === 'reports') {
+      vp.innerHTML = `
+        <div class="card">
+          <span class="pill pill-success" style="margin-bottom:6px;">POPIA PRIVATE ACADEMIC RECORD</span>
+          <h3 style="font-size:16px; font-weight:700;">My Report Cards (${user.name})</h3>
+          <p style="font-size:12px; color:var(--text-muted); margin:4px 0 14px 0;">Only you can view your personal term marks.</p>
+          <div style="padding:10px; border:1px solid var(--border); border-radius:8px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <strong>Kwartaal 3 Rapport</strong>
+              <div style="font-size:11px; color:var(--success);">Aggregate: 78% (Passed with Distinction)</div>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="alert('Downloading your report card...')">📥 PDF</button>
+          </div>
+        </div>
+      `;
+    } else if (currentActiveTab === 'events') {
+      renderEventsView(vp);
+    }
+  }
+
+  // TEACHER VIEW
+  function renderTeacherView(user, vp) {
+    if (currentActiveTab === 'post') {
+      vp.innerHTML = `
+        <div class="card">
+          <h3 style="font-size:15px; font-weight:700; margin-bottom:10px;">⚡ 10-Second Task Post</h3>
+          <div class="form-group">
+            <label class="form-label">Subject & Class Code</label>
+            <input type="text" id="tSubject" class="form-input" value="${user.subject}" style="margin-bottom:6px;" />
+            <input type="text" id="tClassCode" class="form-input" value="${user.classCode}" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Homework Title & Details</label>
+            <input type="text" id="tTitle" class="form-input" placeholder="e.g. Activity 3 Sums 1-8" style="margin-bottom:6px;" />
+            <textarea id="tDesc" class="form-input" rows="2" placeholder="Instructions in exercise book..."></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Due Date</label>
+            <input type="text" id="tDue" class="form-input" value="Tomorrow" />
+          </div>
+          <button class="btn btn-primary" onclick="teacherSubmitTask()">🚀 Publish to Class & Parents</button>
+        </div>
+      `;
+    } else if (currentActiveTab === 'roster') {
+      vp.innerHTML = `
+        <div class="card">
+          <h3 style="font-size:15px; font-weight:700; margin-bottom:10px;">Morning Roll Call (${user.classCode})</h3>
+          <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Inspection of homework done at home.</p>
+          <div style="padding:10px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <strong>Thabo Mokoena</strong>
+              <div style="font-size:11px; color:var(--success);">Completed at 17:35</div>
+            </div>
+            <button class="btn btn-danger btn-sm" onclick="showToast('Flagged incomplete - alert sent to parent!')">Flag Not Done</button>
+          </div>
+        </div>
+      `;
+    } else if (currentActiveTab === 'events') {
+      renderEventsView(vp);
+    }
+  }
+
+  function teacherSubmitTask() {
+    const subj = document.getElementById('tSubject').value;
+    const cCode = document.getElementById('tClassCode').value;
+    const title = document.getElementById('tTitle').value;
+    const desc = document.getElementById('tDesc').value;
+    const due = document.getElementById('tDue').value;
+
+    if (!title) return alert("Please enter homework title!");
+
+    db.homework.unshift({
+      id: 'hw_' + Date.now(),
+      subject: subj,
+      classCode: cCode,
+      teacherName: db.currentUser.name,
+      title: title,
+      desc: desc,
+      due: due
+    });
+    saveDB();
+    showToast("⚡ Task posted in 10s!");
+    setAppTab('post');
+  }
+
+  // ADMIN VIEW
+  function renderAdminView(user, vp) {
+    const school = db.schools[user.schoolCode];
+
+    if (currentActiveTab === 'broadcast') {
+      vp.innerHTML = `
+        <div class="card">
+          <span class="pill pill-danger" style="margin-bottom:8px;">⚠️ EMERGENCY BROADCAST</span>
+          <h3 style="font-size:15px; font-weight:700; margin-bottom:10px;">Emergency School Closure Notice</h3>
+          <div class="form-group">
+            <label class="form-label">Alert Message</label>
+            <input type="text" id="adminTickerInput" class="form-input" value="School closes early today at 12:30 due to Interhigh Athletics." />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Target Grades</label>
+            <select class="form-input" id="adminTickerGrade">
+              <option>Grades 4–12</option>
+              <option>All Grades (Gr R – 12)</option>
+              <option>Grade R Only</option>
+            </select>
+          </div>
+          <button class="btn btn-danger" onclick="adminSetEmergencyBanner()">🚨 Broadcast to All Parents</button>
+        </div>
+      `;
+    } else if (currentActiveTab === 'news') {
+      vp.innerHTML = `
+        <div class="card">
+          <span class="pill pill-primary" style="margin-bottom:8px;">📰 WEEKLY NEWSLETTER</span>
+          <h3 style="font-size:15px; font-weight:700; margin-bottom:10px;">Publish Newsletter & Highlights</h3>
+          <div class="form-group">
+            <label class="form-label">Title</label>
+            <input type="text" id="adminNewsTitle" class="form-input" placeholder="e.g. Nuusbrief #28 • Term 3" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">3 Action Highlights (For Busy Parents)</label>
+            <textarea id="adminNewsBullets" class="form-input" rows="3" placeholder="1. Civvies Day Friday&#10;2. Rugby starts 14:00&#10;3. Fees due"></textarea>
+          </div>
+          <button class="btn btn-primary" onclick="adminPublishNewsletter()">Publish to All Parents</button>
+        </div>
+      `;
+    } else if (currentActiveTab === 'events') {
+      renderEventsView(vp);
+    }
+  }
+
+  function adminSetEmergencyBanner() {
+    const text = document.getElementById('adminTickerInput').value;
+    const target = document.getElementById('adminTickerGrade').value;
+    const school = db.schools[db.currentUser.schoolCode];
+    school.emergencyBanner = { active: true, text: text, target: target };
+    saveDB();
+    showToast("Emergency banner updated for all parents!");
+    router();
+  }
+
+  function adminPublishNewsletter() {
+    const title = document.getElementById('adminNewsTitle').value;
+    const bullets = document.getElementById('adminNewsBullets').value.split('\n').filter(x=>x.trim()!=='');
+    if (!title) return alert("Please enter title!");
+    db.newsletters.unshift({
+      id: 'news_' + Date.now(),
+      schoolCode: db.currentUser.schoolCode,
+      title: title,
+      bullets: bullets
+    });
+    saveDB();
+    showToast("Newsletter published to parents!");
+  }
+
+  // SHARED VIEWS
+  function renderEventsView(vp) {
+    vp.innerHTML = `
+      <div class="card">
+        <h3 style="font-size:15px; font-weight:700; margin-bottom:10px;">🎉 School Events & Sokkies</h3>
+        <div style="padding:10px; border-bottom:1px solid var(--border);">
+          <span class="pill pill-warning">SOKKIE</span>
+          <h4 style="font-size:14px; margin:4px 0;">Hoërskool Lente Sokkie</h4>
+          <p style="font-size:12px; color:var(--text-muted);">📅 Vrydag 18:00 - 22:00 • 🎯 Gr 8–12 Only (R50)</p>
+        </div>
+        <div style="padding:10px; border-bottom:1px solid var(--border);">
+          <span class="pill pill-danger">SPORT</span>
+          <h4 style="font-size:14px; margin:4px 0;">Interhoër Atletiek (Sluit 12:30)</h4>
+          <p style="font-size:12px; color:var(--text-muted);">📅 Woensdag 08:00 • 🎯 Gr 4–12 (Gr R–3 Uitgesluit)</p>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderNewslettersView(vp) {
+    const news = db.newsletters[0] || {
+      title: "Nuusbrief #28 • Term 3",
+      bullets: ["Friday is Civvies Day (R10).", "Rugby vs Nelspruit at 14:00.", "School fees due by 30 September."]
+    };
+    vp.innerHTML = `
+      <div class="card" style="border-left:4px solid var(--primary);">
+        <span class="pill pill-primary">OFFICIAL WEEKLY NEWSLETTER</span>
+        <h3 style="font-size:15px; font-weight:700; margin:6px 0 4px 0;">${news.title}</h3>
+        <ul style="font-size:12px; color:#334155; margin-left:16px; margin-top:6px; line-height:1.6;">
+          ${news.bullets.map(b => `<li>${b}</li>`).join('')}
+        </ul>
+        <button class="btn btn-outline btn-sm" style="margin-top:10px;" onclick="alert('Downloading full official 8-page PDF...')">📥 Download Full PDF</button>
+      </div>
+    `;
+  }
+
+  // ================= 5. QUICK DEMO DATA LOADER =================
+  function loadSampleDataAndLogin() {
+    db.schools["MAL-2026"] = {
+      name: "Laerskool Malelane",
+      code: "MAL-2026",
+      pin: "STAFF2026",
+      type: "combined",
+      logo: null,
+      emergencyBanner: { active: true, text: "School closes at 12:30 today for Athletics.", target: "Grades 4–12" }
+    };
+    db.users = [
+      { id: 'u_admin', role: 'school_admin', name: 'Mrs. Botha (Reception)', email: 'admin@school.co.za', pass: '1234', schoolCode: 'MAL-2026' },
+      { id: 'u_teach', role: 'teacher', name: 'Mnr. J. van der Merwe', email: 'teacher@school.co.za', pass: '1234', schoolCode: 'MAL-2026', subject: 'Woodwork / Houtwerk', classCode: 'WOOD-9B' },
+      { id: 'u_parent', role: 'parent', name: 'Mrs. Sarah Mokoena', email: 'parent@gmail.com', pass: '1234', schoolCode: 'MAL-2026', children: [{ id: 'ch1', name: 'Thabo Mokoena', grade: 'Grade 9B', classCodes: ['WOOD-9B'] }] },
+      { id: 'STU902', role: 'student', name: 'Thabo Mokoena', email: 'thabo@student.co.za', pass: '1234', schoolCode: 'MAL-2026', grade: 'Grade 9B', classCodes: ['WOOD-9B'] }
+    ];
+    db.homework = [
+      { id: 'hw1', subject: 'Woodwork / Houtwerk', classCode: 'WOOD-9B', teacherName: 'Mnr. J. van der Merwe', title: 'Isometric Joint Drawing #3', desc: 'Complete drawing on page 32. Sharpen 25mm chisel.', due: 'Tomorrow' }
+    ];
+    db.currentUser = db.users[2]; // Default to Parent
+    saveDB();
+    showToast("Loaded demo accounts and signed in as Parent!");
+    router();
   }
 
   function showToast(msg) {
